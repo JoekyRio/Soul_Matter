@@ -1,0 +1,80 @@
+name: "🐞 Bug：有东西坏了"
+description: 报错、404、点了没反应、数据不对
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        把步骤和"期望 vs 实际"写清楚，就能大大加快定位。截图和录屏可以直接拖进下面的输入框。
+  - type: input
+    id: page
+    attributes:
+      label: 在哪个页面
+      description: 直接复制浏览器地址栏的网址最好
+      placeholder: 例如：https://soulmatter.vercel.app/zh 或"心事详情页"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 操作步骤
+      description: 从一个明确的起点开始，例如"登录后在首页"
+      placeholder: |
+        1. 登录后在首页
+        2. 点击左侧第一张心事卡片
+        3. ……
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望发生什么
+      placeholder: 例如：进入这条心事的详情页
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际发生了什么
+      description: 如果有错误文字，请原样抄下来
+      placeholder: 例如：显示 404，网址变成了 /entries/xxxx
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图 / 录屏
+      description: 把图片或视频直接拖进这里
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 在哪里发现的
+      options:
+        - 正式站 soulmatter.vercel.app
+        - 预览链接（PR 里的 Vercel Preview）
+        - 本地
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 设备和浏览器
+      placeholder: 例如：iPhone 15 / Safari；MacBook / Chrome
+  - type: input
+    id: time
+    attributes:
+      label: 大概的发生时间
+      description: 精确到分钟更好，方便查日志
+      placeholder: 例如：10 月 6 日 22:30
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 严重程度
+      options:
+        - P0 不能用 / 数据丢失 / 隐私泄露
+        - P1 主要功能受损，但能绕过
+        - P2 体验问题，不影响使用
+        - P3 美观 / 文案
+    validations:
+      required: true

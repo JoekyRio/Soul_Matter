@@ -1,0 +1,43 @@
+name: "🤖 AI 回复质量"
+description: AI 说得不好：说教、贴标签、跑题、太长、没接住情绪
+title: "[AI] "
+labels: ["ai-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        最有价值的是最后一项："你希望它怎么说"——哪怕只写个大意，也会直接变成 prompt 的改进。
+  - type: textarea
+    id: context
+    attributes:
+      label: 对话截图或原文
+      description: 包括你说的话和 AI 的回复
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: 问题属于哪一类
+      multiple: true
+      options:
+        - 没接住情绪 / 冷冰冰
+        - 说教 / 给大道理
+        - 贴标签 / 像在诊断
+        - 替我下结论
+        - 一次问太多问题
+        - 跑题 / 没听懂
+        - 太长 / 手机上读着累
+        - 危机信号没有识别
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: 你希望它怎么说
+      placeholder: 例如：先说"被当众否定确实很难受"，再问我当时脑子里冒出的第一个念头是什么
+  - type: input
+    id: script
+    attributes:
+      label: 对应的测试剧本编号（如有）
+      placeholder: 例如：剧本 03
