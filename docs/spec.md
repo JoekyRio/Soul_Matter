@@ -130,6 +130,11 @@
   ├─ Panel (/panel, /panel/edit) — Markdown 展示/编辑
   └─ 心事详情 (/entries/[id])
 
+布局策略:
+  - 全局 Navbar 保留给内页使用(entries/new, entries/[id]/edit 等)
+  - 首页 (/) 在 M1 Task 13 中内联 Header,不再使用全局 Navbar
+  - middleware.ts 需同步保护 / 路径(M1 完成后)
+
 后端: Next.js Route Handlers
   ├─ /api/entries            心事 CRUD(已有)
   ├─ /api/chat               流式对话(M2)
@@ -223,6 +228,6 @@ AI 层:
 - [x] Supabase 项目:已创建,Phase 1 已部署
 - [x] AI 模型:DeepSeek(已确认)
 - [x] 开发工具:实现期转 TraeCode IDE(已确认)
-- [ ] 多语言:首期翻译范围(导航/按钮 / 全部)?
-- [ ] Panel Markdown 编辑器组件选型(react-markdown + textarea / Monaco / 其他)?
-- [ ] 心事情绪维度:沿用预设列表还是情绪轮?
+- [x] 多语言:首期翻译范围(导航/按钮 / 全部)? → 首期翻译范围: 导航/按钮/首页入口文案(Task 11 已确认)
+- [x] Panel Markdown 编辑器组件选型(react-markdown + textarea / Monaco / 其他)? → react-markdown + textarea(Task 12 已确认)
+- [x] 心事情绪维度:沿用预设列表还是情绪轮? → 沿用现有预设列表(calm/happy/anxious/angry/sad/tired/confused/lonely)

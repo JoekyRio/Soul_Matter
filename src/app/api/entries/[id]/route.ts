@@ -42,6 +42,7 @@ export async function GET(
     title: row.title,
     content: row.content,
     mood: row.mood as Mood | null,
+    type: row.type as 'manual' | 'chat',
     created_at: row.created_at,
     updated_at: row.updated_at,
     tags: row.entry_tags?.map((et) => et.tags).filter(Boolean) || [],

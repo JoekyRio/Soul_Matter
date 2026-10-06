@@ -11,7 +11,7 @@
 ### M1 · 首页重构(不含 AI)— P0 当前里程碑
 
 #### Task 10: 数据库 schema 扩展(Panel + entries.type)
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: high
 - **Depends On**: None(独立于代码)
 - **Description**:
@@ -19,6 +19,11 @@
     - `entries` 表加字段 `type text not null default 'manual'`(取值 'manual' | 'chat')
     - 新表 `panel_contents` (id, user_id, content text, created_at, updated_at),RLS 仅本人读写
   - 在 Supabase SQL Editor 执行
+  - **迁移注意**: schema.sql 增量脚本供新项目使用;线上已有数据库需在 Supabase SQL Editor 单独执行 ALTER TABLE:
+    ```sql
+    ALTER TABLE entries ADD COLUMN IF NOT EXISTS type text NOT NULL DEFAULT 'manual';
+    ```
+    已有记录自动填充为 'manual'
 - **Acceptance Criteria**: AC-9
 - **Test Requirements**:
   - `rule` TR-10.1: schema.sql 增量部分执行无报错
@@ -26,10 +31,11 @@
 - **Completion Evidence**: Supabase Table Editor 截图,表结构正确
 
 #### Task 11: 多语言框架接入(next-intl)
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: high
 - **Depends On**: None
 - **Description**:
+  - **前置调研**: 先阅读 `node_modules/next/dist/docs/` 中 i18n 相关文档,确认 next-intl 与 Next.js 16 App Router 的集成方式(需要 [locale] 路由段 + middleware 重写),再动手实现
   - 安装 `next-intl`,配置 `src/i18n/`
   - 起步翻译范围:顶部 LOGO/Slogan、导航(写心事、退出、登录、注册)、首页入口文案(Chat the Day / Look back / Design your panel)、Panel 占位提示
   - 首期支持 `zh` `en`,默认 `zh`
@@ -41,7 +47,7 @@
 - **Completion Evidence**: 中英文截图对比
 
 #### Task 12: Panel API + 编辑页
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: high
 - **Depends On**: Task 10
 - **Description**:
@@ -59,7 +65,7 @@
 - **Completion Evidence**: 编辑 + 首页展示截图
 
 #### Task 13: 首页三栏布局重构
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: high
 - **Depends On**: Task 11, Task 12
 - **Description**:
@@ -72,6 +78,8 @@
       - 右下:Panel 展示区 + 右下角 [Design your panel] 按钮
   - 移动端:三栏堆叠为单列,Panel 在最上,卡片流在中间,入口在下
   - 删除原 `/entries` 列表页(整合进首页),`/entries/[id]` 详情页保留
+  - **Layout 策略**: 根 layout.tsx 中的全局 Navbar 保留给内页使用;首页自行实现顶部 Header(包含 LOGO + 账户 + 语言切换 + 退出),首页不渲染全局 Navbar(通过条件判断或独立 layout)
+  - **middleware 更新**: 首页从 redirect 改为直接渲染后,需将 `/` 加入 middleware 的 protectedPaths,确保未登录用户访问首页时重定向到 /login
 - **Acceptance Criteria**: AC-8
 - **Test Requirements**:
   - `rubric` TR-13.1: 桌面 + 移动端布局还原草图,评分 >= 4
@@ -79,7 +87,7 @@
 - **Completion Evidence**: 桌面 + 移动端截图对比草图
 
 #### Task 14: 卡片流搜索 + 筛选
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: medium
 - **Depends On**: Task 13
 - **Description**:
@@ -106,6 +114,8 @@
 - **Test Requirements**:
   - `rule` TR-15.1: build + lint 0 错误
   - `rule` TR-15.2: 线上 https://soulmatter.vercel.app 可访问,功能正常
+  - `rule` TR-15.3: 卡片流加载中有 loading 状态(skeleton 或 spinner)
+  - `rule` TR-15.4: API 调用失败时显示友好错误提示,不白屏
 - **Completion Evidence**: Vercel 部署 Ready 截图 + 线上首页截图
 
 ---
@@ -121,6 +131,7 @@
   - 新表 `messages` (id, conversation_id, role, content, model, token_count, created_at)
   - 在 Vercel 加环境变量 `DEEPSEEK_API_KEY`(Secret,仅 Production + Preview,后端用,**不加 NEXT_PUBLIC_ 前缀**)
   - `src/lib/deepseek.ts`:封装 chat completions 调用,流式返回
+  - **注意**: 本任务只建 `conversations` + `messages` 两张表。`conversation_summaries` 表在 Task 19 中创建
 - **Acceptance Criteria**: AC-11
 - **Test Requirements**:
   - `rule` TR-16.1: schema 执行无错
@@ -233,10 +244,10 @@
 
 ```
 M1 首页重构(不含 AI)
-  Task 10 (schema: panel + entries.type)
-  Task 11 (i18n)              ─┐
-  Task 12 (Panel API + 编辑页) ─┤─ Task 13 (三栏布局) ─ Task 14 (搜索筛选) ─ Task 15 (M1 联调)
-                                │
+  Task 10 (schema: panel + entries.type) ─┐
+  Task 11 (i18n)                          ├─ Task 13 (三栏布局) ─ Task 14 (搜索筛选) ─ Task 15 (M1 联调)
+  Task 12 (Panel API + 编辑页) ───────────┘
+
 M2 Chat the Day 基础
   Task 15 ─ Task 16 (对话 schema + DeepSeek) ─ Task 17 (/chat 流式 UI) ─ Task 18 (AI 日志)
 

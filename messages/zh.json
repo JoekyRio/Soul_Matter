@@ -1,0 +1,66 @@
+{
+  "common": {
+    "appName": "心事",
+    "appSlogan": "记录心事，认识自己，与世界和解",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "loading": "加载中...",
+    "error": "出错了"
+  },
+  "navbar": {
+    "title": "心事",
+    "writeEntry": "写心事",
+    "signOut": "退出"
+  },
+  "nav": {
+    "writeEntry": "写心事",
+    "chatTheDay": "Chat the Day",
+    "lookBack": "Look back",
+    "designPanel": "Design your panel"
+  },
+  "home": {
+    "welcome": "欢迎回来",
+    "recentEntries": "最近的心事",
+    "noEntries": "还没有心事记录",
+    "searchPlaceholder": "搜索心事...",
+    "filterByMood": "按情绪筛选",
+    "filterByTag": "按标签筛选"
+  },
+  "chat": {
+    "title": "Chat the Day",
+    "placeholder": "Tell me what touched you today?",
+    "send": "发送",
+    "thinking": "思考中..."
+  },
+  "panel": {
+    "title": "我的 Panel",
+    "edit": "编辑 Panel",
+    "empty": "还没有自定义 Panel",
+    "designYours": "Design your panel",
+    "markdownHelp": "支持 Markdown 格式",
+    "editPanel": "编辑 Panel",
+    "loading": "加载中...",
+    "saveError": "保存失败，请重试",
+    "cancel": "取消",
+    "saving": "保存中...",
+    "save": "保存",
+    "editMode": "编辑模式",
+    "placeholder": "在此输入 Markdown 内容...",
+    "previewMode": "预览模式",
+    "previewPlaceholder": "预览将在此显示"
+  },
+  "auth": {
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "loginTitle": "登录你的心事",
+    "registerTitle": "创建账户",
+    "noAccount": "还没有账户？",
+    "hasAccount": "已有账户？"
+  }
+}

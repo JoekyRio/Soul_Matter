@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { MOOD_LABELS, type Mood, type EntryRow } from "@/types/database";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +12,7 @@ export default async function EntriesPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return (
-      <div className="py-12 text-center text-slate-500">请先登录</div>
-    );
+    redirect("/zh/login");
   }
 
   const { data } = await supabase

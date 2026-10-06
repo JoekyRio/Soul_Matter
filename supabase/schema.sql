@@ -19,6 +19,7 @@ create table if not exists public.entries (
   title text not null,
   content text not null,
   mood text,
+  type text not null default 'manual', -- 'manual' | 'chat'
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -43,6 +44,16 @@ create table if not exists public.entry_tags (
   primary key (entry_id, tag_id)
 );
 
+-- panel_contents 表：用户自定义 Panel 内容（Markdown）
+create table if not exists public.panel_contents (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  content text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(user_id) -- 每个用户只有一条 Panel 记录（upsert 模式）
+);
+
 -- updated_at 自动更新触发器函数
 create or replace function public.update_updated_at()
 returns trigger as $$
@@ -60,6 +71,11 @@ create trigger entries_updated_at
 drop trigger if exists profiles_updated_at on public.profiles;
 create trigger profiles_updated_at
   before update on public.profiles
+  for each row execute function public.update_updated_at();
+
+drop trigger if exists panel_contents_updated_at on public.panel_contents;
+create trigger panel_contents_updated_at
+  before update on public.panel_contents
   for each row execute function public.update_updated_at();
 
 -- 注册新用户时自动创建 profile
@@ -83,6 +99,7 @@ alter table public.profiles enable row level security;
 alter table public.entries enable row level security;
 alter table public.tags enable row level security;
 alter table public.entry_tags enable row level security;
+alter table public.panel_contents enable row level security;
 
 -- profiles 策略：用户只能查看和修改自己的 profile
 create policy "profiles_select_own"
@@ -161,3 +178,21 @@ create policy "entry_tags_delete_own"
       where e.id = entry_tags.entry_id and e.user_id = auth.uid()
     )
   );
+
+-- panel_contents 策略：用户只能 CRUD 自己的 Panel
+create policy "panel_contents_select_own"
+  on public.panel_contents for select
+  using (auth.uid() = user_id);
+
+create policy "panel_contents_insert_own"
+  on public.panel_contents for insert
+  with check (auth.uid() = user_id);
+
+create policy "panel_contents_update_own"
+  on public.panel_contents for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "panel_contents_delete_own"
+  on public.panel_contents for delete
+  using (auth.uid() = user_id);
