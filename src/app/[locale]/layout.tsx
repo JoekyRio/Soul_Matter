@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
@@ -16,34 +16,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "心事 · Soul Matter",
-  description: "记录心事，认识自己，与世界和解",
-};
-
-export default async function LocaleLayout({
-  children,
-  params,
-}: {
+type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+};
 
-  // 验证 locale 是否有效
-  if (!routing.locales.includes(locale as any)) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) return {};
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return { title: t("title"), description: t("description") };
+}
+
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 
-  // 获取翻译消息
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+    <html
+      lang={locale === "zh" ? "zh-CN" : locale}
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
+      <body className="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

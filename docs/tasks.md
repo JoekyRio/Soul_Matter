@@ -1,11 +1,12 @@
 # 心事 (Soul Matter) - 实施计划 v2
 
-> **v2 草案 · 2026-10-06**：根据 `docs/product-review.md` 重新梳理。标 ❓ 的地方取决于评审文档第 5 节的决策（D1–D7），确认后去掉 ❓。
+> **v2 · 2026-10-06**：根据 `docs/product-review.md` 重新梳理。评审中的决策 D1–D7 已于 2026-10-06 确认，全部按推荐执行；其中 D4 = 目前只用中文，D7 = 求助资源由心理医生朋友审定后提供。
 >
 > 原则：
 > 1. 每个里程碑交付一个**用户能感受到的变化**，并且服务于"记录 → 觉察 → 行动 → 复盘"循环中的某一环
 > 2. 每个里程碑以 **CI 全绿 + 你在 Vercel 预览链接上按验收清单走一遍** 结束；"完成"不由写代码的一方自己宣布
 > 3. 任务大小：S = 一次对话内完成；M = 1–2 次；L = 需要拆分
+> 4. 状态：`pending` 未开始 → `in_review` 代码完成、自动检查通过、**等你验收** → `completed` 验收通过并上线
 >
 > 历史：Phase 0 + 1（Task 1–9）与 M1（Task 10–14）的原始记录见本文末尾和 git 历史。
 
@@ -20,7 +21,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 
 | 里程碑 | 任务 | 状态 |
 |---|---|---|
-| M1.5 修复与质量地基 | Task 15–19 | `pending`（下一步） |
+| M1.5 修复与质量地基 | Task 15–19 | `in_review`（Task 15–18 待你验收，见 Task 19） |
 | M2 Chat the Day v1 | Task 20–25 | `pending` |
 | M3 对话 → 心事 → Panel 闭环 | Task 26–29 | `pending` |
 | M4 复盘与"敢给朋友用" | Task 30–33 | `pending` |
@@ -33,8 +34,14 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 > 目标：M1 的功能全部真正可用；从此以后每次改动都有自动检查把关。
 > 背景：见 `product-review.md` 第 3 节（B1–B10）。
 
+**完成情况（2026-10-06）**：Task 15–18 的代码已完成，B1–B10 全部修复。
+- 自动检查：`npm run check`（lint 0 错误 + 类型检查）、`npm run build` 通过；12 个 E2E 测试在本地 Supabase 上全部通过
+- 修复前验证：用同一套测试跑旧代码，12 个中 10 个失败；以真实登录用户复现了"保存后 404、点卡片 404、退出 404、首页没有写心事、`/` 进入旧列表页"
+- 额外发现并修复 **B11**：旧代码注册成功后跳转的网址里带中文提示文字，导致服务端报错（`Invalid character in header content`）——现象是点"注册"后页面停住没反应，但账号其实已经建好了。现在改为传错误/提示代码，由页面翻译
+- 待办：Task 19 —— 你在预览链接上按 `docs/acceptance/M1.md` 验收
+
 #### Task 15: 路由与中间件修复（B1、B8）
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: None
 - **Description**:
@@ -51,7 +58,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 冒烟测试（Task 18）全部通过
 
 #### Task 16: 布局与导航修复（B2、B3、B5、B10）
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 15
 - **Description**:
@@ -67,11 +74,11 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 手机 + 电脑截图
 
 #### Task 17: 文案国际化补全 + Markdown 样式 + 深色模式（B4、B6、B7、B9）
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: medium · **Size**: M
 - **Depends On**: Task 16
 - **Description**:
-  - 首页、登录/注册、卡片流、筛选器、情绪标签、心事表单、详情页的文案全部移入 `messages/*.json` ❓（D4：若不需要英文，仍走翻译文件，但英文可暂时与中文相同）
+  - 首页、登录/注册、卡片流、筛选器、情绪标签、心事表单、详情页的文案全部移入 `messages/*.json`（D4：英文文案缺失时自动回退中文，新功能只需写中文）
   - 安装 `@tailwindcss/typography`，让 Panel 的 Markdown 正确显示标题、列表、引用
   - 深色模式：本阶段统一为浅色主题（移除不完整的深色变量），深色模式放入 Backlog
   - 首页卡片流：搜索改为在全部心事中进行（服务端查询或加载全部，按数据量定）
@@ -83,14 +90,14 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 中英文截图；Panel 截图
 
 #### Task 18: 质量门禁（CI + 冒烟测试）
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 15（可与 16、17 并行）
 - **Description**:
   - 修复全部 lint 错误，`npm run lint` 0 错误
   - 新增 `npm run typecheck`
   - 新增 GitHub Actions：每次推送/PR 自动运行 lint + typecheck + build，失败则 PR 上显示红叉
-  - 新增 Playwright 冒烟测试：未登录路径（登录、注册、重定向）；如果提供了**测试专用** Supabase 项目和测试账号，再覆盖登录后的核心流程（写心事 → 首页可见 → 详情 → 编辑 → 删除；编辑 Panel → 首页可见）
+  - 新增 Playwright 冒烟测试，连接 CI 中临时启动的**本地 Supabase**（Docker，不碰线上数据库）：未登录路径（登录、注册、重定向）+ 登录后的核心流程（写心事 → 首页可见 → 详情 → 编辑 → 搜索筛选 → 删除；编辑 Panel → 首页可见；切换语言；退出；两个账号互相看不到数据；手机布局顺序）
   - 首页卡片流 loading 状态；接口失败时显示友好提示，不白屏
   - 新增 `docs/acceptance/M1.md`：给你用的人工验收清单
 - **Acceptance Criteria**: 原 TR-15.1 ~ TR-15.4
@@ -115,7 +122,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 ## M2 · Chat the Day v1（有引导、有护栏的对话）
 
 > 目标：能和一个"会提问、不说教、不贴标签、有安全意识"的 AI 聊今天发生的事。
-> ❓ D2：引导 prompt 与安全护栏从 Phase 3 提前到这里。
+> D2：引导 prompt 与安全护栏从 Phase 3 提前到这里，与对话同时上线。
 
 #### Task 20: 对话数据表（conversations / messages / ai_logs）
 - **Status**: `pending`
@@ -127,7 +134,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
     - `messages` (id, conversation_id, user_id, role 'user'|'assistant', content, feedback smallint null, created_at)
     - `ai_logs` (id, user_id, endpoint, model, prompt_version, request jsonb, response text, prompt_tokens, completion_tokens, duration_ms, error, created_at)
   - 三张表都开启 RLS，只能访问自己的数据（`messages` 冗余 `user_id` 以简化策略）
-  - ❓ D5：`ai_logs` 保留 30 天（定时清理或查询时过滤，二选一）
+  - D5：`ai_logs` 存完整请求与回复，保留 30 天（实现时在定时清理和查询时过滤中二选一）
   - 迁移由你在 Supabase SQL Editor 执行（附操作步骤）
 - **Acceptance Criteria**: AC-11
 - **Test Requirements**:
@@ -191,7 +198,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Depends On**: Task 22, Task 23
 - **Description**:
   - 求助资源卡片：在 /chat 页面始终可以打开；AI 识别到危机信号时自动展示
-  - ❓ D7：热线号码与服务时间由你核实后提供
+  - D7：热线号码与服务时间由你邀请心理医生朋友审定后提供。在此之前，资源卡片先显示"资源审定中"的占位内容和通用建议（联系身边信任的人、当地急救电话），只供你自己使用；**资源审定前不邀请朋友使用 Chat**
   - 首次进入 /chat 时的一屏说明：AI 不是咨询师；数据存储在哪里、谁能看到、会发送给 DeepSeek；紧急情况找谁。点"我知道了"后不再显示
 - **Acceptance Criteria**: AC-14
 - **Test Requirements**:
@@ -214,7 +221,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 ## M3 · 对话 → 心事 → Panel 闭环
 
 > 目标：聊完生成一张心事卡片，写下**自己的**结论，一键钉到 Panel。
-> ❓ D3：总结在"结束对话"时一次性生成；不建 `conversation_summaries` 表。
+> D3：总结在"结束对话"时一次性生成；不建 `conversation_summaries` 表。
 
 #### Task 26: 结束对话 → AI 整理
 - **Status**: `pending`
@@ -319,7 +326,8 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Description**:
   - 隐私说明页：存了什么、谁能看到（含"项目管理员技术上可见"）、发送给了谁（DeepSeek）、如何导出和删除
   - 修正 README 与 spec 中不准确的隐私描述
-  - 内测准备：邀请方式（关闭开放注册或使用邀请码 ❓）、反馈渠道、Supabase 免费版"7 天无访问自动暂停"的应对
+  - 内测准备：邀请方式（关闭开放注册或使用邀请码，待定）、反馈渠道、Supabase 免费版"7 天无访问自动暂停"的应对
+  - 前置条件：Task 24 的求助资源已由心理医生朋友审定
 - **Completion Evidence**: 隐私页截图；内测邀请说明
 
 ---
@@ -329,7 +337,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 | 条目 | 原位置 | 什么时候考虑 |
 |---|---|---|
 | Panel AI 推荐 Motto | M4 / Task 21 | Conclusion → Panel 用了一段时间后，看是否还需要 |
-| 心理学知识库 RAG | Phase 3 | 测试剧本显示 prompt-only 在"准确性/有据可依"上明显不足时 ❓ D6 |
+| 心理学知识库 RAG | Phase 3 | 测试剧本显示 prompt-only 在"准确性/有据可依"上明显不足时（D6） |
 | 对话中实时总结侧栏 | M3 / FR-2.11 | 电脑端使用较多时 |
 | 行为目标设定与打卡 | Phase 4 | M4 之后 |
 | AI 个性化建议 / 基于历史的反馈 | Phase 4 | 积累足够记录后 |

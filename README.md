@@ -5,18 +5,22 @@
 ## 功能
 
 - ✅ 心事记录：写心事、打标签、标记情绪
+- ✅ 首页三栏：心事卡片流（搜索 + 筛选）、入口、自定义 Panel（Markdown）
 - ✅ 用户系统：邮箱注册登录，数据私密
 - ✅ 多端响应式：手机和电脑浏览器都能用
 - ✅ 数据安全：行级安全策略，只能访问自己的数据
-- 🚧 AI 科学诊断（开发中）
-- 🚧 行为改变跟踪（开发中）
-- 🚧 移动端 App（开发中）
+- ✅ 多语言框架：中文为主，可切换英文
+- 🚧 Chat the Day：AI 引导式对话（M2）
+- 🚧 对话 → 心事 → Panel 闭环（M3）
+- 🚧 Look back 复盘、添加到主屏幕、数据导出/删除（M4）
 
 ## 技术栈
 
 - **前端/后端**: Next.js 16 (App Router) + TypeScript
 - **数据库/认证**: Supabase
 - **样式**: Tailwind CSS
+- **多语言**: next-intl
+- **测试**: Playwright（E2E）+ GitHub Actions（CI）
 - **部署**: Vercel
 
 ## 快速开始
@@ -63,25 +67,38 @@ npm run dev
 ```
 src/
 ├── app/
-│   ├── entries/          # 心事页面（列表、详情、新建、编辑）
-│   ├── api/entries/      # 心事 API
-│   ├── auth/             # 认证相关
-│   ├── login/            # 登录页
-│   ├── register/         # 注册页
-│   └── layout.tsx        # 全局布局
-├── components/           # 组件
-├── lib/supabase/         # Supabase 客户端
-├── types/                # 类型定义
-└── proxy.ts              # 认证代理（中间件）
-supabase/
-└── schema.sql            # 数据库表结构
+│   ├── [locale]/            # 页面（中文不带前缀，英文为 /en/...）
+│   │   ├── (app)/           #   登录后的页面：首页、心事、Panel
+│   │   ├── login/           #   登录
+│   │   └── register/        #   注册
+│   ├── api/                 # 接口：entries、panel
+│   └── auth/                # 登录/注册/退出动作、邮箱确认回调
+├── components/              # 顶栏、登录卡片、语言切换
+├── i18n/                    # 多语言路由与配置
+├── lib/                     # Supabase 客户端、心事查询
+├── types/                   # 类型定义
+└── proxy.ts                 # 语言路由 + 登录保护
+messages/                    # 界面文案（zh.json / en.json）
+supabase/                    # 数据库结构 schema.sql 与迁移脚本
+e2e/                         # 端到端测试（见 e2e/README.md）
+```
+
+## 常用命令
+
+```bash
+npm run dev        # 本地开发
+npm run check      # 代码检查 + 类型检查
+npm run build      # 构建
+npm run test:e2e   # 端到端测试（需要先启动本地测试数据库，见 e2e/README.md）
 ```
 
 ## 隐私说明
 
 - 所有数据通过 HTTPS 加密传输
-- 数据库启用行级安全（RLS），用户只能访问自己的数据
-- AI 分析的原始心事内容不持久化存储
+- 数据存储在 Supabase；数据库启用行级安全（RLS），用户通过应用只能访问自己的数据
+- Supabase 项目管理员在后台技术上可以看到所有数据
+- Chat the Day 上线后，对话内容会发送给 DeepSeek 处理，并保存对话记录；AI 调用日志保留 30 天
+- 详见 `docs/spec.md` 的「隐私」一节
 
 ## 免责声明
 

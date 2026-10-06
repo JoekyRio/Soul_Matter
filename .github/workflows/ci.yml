@@ -1,0 +1,71 @@
+# 自动检查（CI）：每次推送到 main 或更新 PR 时运行。
+# 任何一步失败，PR 页面上就会显示红叉。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint · Typecheck · Build · E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # 在 CI 机器上启动一个临时的本地 Supabase（Docker），不连接线上数据库
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Start local Supabase
+        run: supabase start --workdir e2e -x imgproxy,postgres-meta,supavisor,vector,logflare
+
+      - name: Load database schema
+        run: npm run e2e:db:schema
+
+      - name: Point the app at local Supabase
+        run: |
+          supabase status --workdir e2e -o json | jq -r '
+            "NEXT_PUBLIC_SUPABASE_URL=\(.API_URL)",
+            "NEXT_PUBLIC_SUPABASE_ANON_KEY=\(.ANON_KEY)"
+          ' >> "$GITHUB_ENV"
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E smoke tests
+        run: npm run test:e2e
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

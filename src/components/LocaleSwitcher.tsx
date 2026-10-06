@@ -1,55 +1,44 @@
 'use client';
 
-import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useTransition } from 'react';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { routing, type AppLocale } from '@/i18n/routing';
+
+const LABELS: Record<AppLocale, string> = { zh: '中文', en: 'EN' };
 
 export default function LocaleSwitcher() {
+  const t = useTranslations('header');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  function switchLocale(newLocale: string) {
-    // 从当前路径中移除旧的语言前缀
-    const segments = pathname.split('/').filter(Boolean);
-    const validLocales = ['zh', 'en'];
-    if (validLocales.includes(segments[0])) {
-      segments.shift();
-    }
-    
-    // 构建新路径
-    const newPath = `/${newLocale}${segments.length > 0 ? '/' + segments.join('/') : ''}`;
-    
+  function switchLocale(next: AppLocale) {
     startTransition(() => {
-      router.replace(newPath);
+      // pathname 不含语言前缀（例如 /entries/123），换语言时停留在同一页面
+      router.replace(pathname, { locale: next });
     });
   }
 
   return (
-    <div className="flex items-center gap-1">
-      <button
-        onClick={() => switchLocale('zh')}
-        disabled={isPending || locale === 'zh'}
-        className={`px-2 py-1 text-xs rounded ${
-          locale === 'zh'
-            ? 'bg-slate-900 text-white'
-            : 'text-slate-600 hover:bg-slate-100'
-        }`}
-      >
-        中文
-      </button>
-      <button
-        onClick={() => switchLocale('en')}
-        disabled={isPending || locale === 'en'}
-        className={`px-2 py-1 text-xs rounded ${
-          locale === 'en'
-            ? 'bg-slate-900 text-white'
-            : 'text-slate-600 hover:bg-slate-100'
-        }`}
-      >
-        EN
-      </button>
+    <div role="group" aria-label={t('language')} className="flex items-center gap-1">
+      {routing.locales.map((l) => (
+        <button
+          key={l}
+          type="button"
+          onClick={() => switchLocale(l)}
+          disabled={isPending || locale === l}
+          aria-pressed={locale === l}
+          className={`rounded px-2 py-1 text-xs ${
+            locale === l
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          {LABELS[l]}
+        </button>
+      ))}
     </div>
   );
 }

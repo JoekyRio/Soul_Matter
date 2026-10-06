@@ -1,66 +1,124 @@
 {
+  "metadata": {
+    "title": "Soul Matter",
+    "description": "Write it down, know yourself, make peace with the world"
+  },
   "common": {
     "appName": "Soul Matter",
-    "appSlogan": "Record your thoughts, know yourself, make peace with the world",
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "loading": "Loading...",
-    "error": "Error"
+    "appSlogan": "Write it down, know yourself, make peace with the world",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "backHome": "Back to home"
   },
-  "navbar": {
-    "title": "Soul Matter",
-    "writeEntry": "Write Entry",
-    "signOut": "Sign Out"
-  },
-  "nav": {
-    "writeEntry": "Write Entry",
-    "chatTheDay": "Chat the Day",
-    "lookBack": "Look back",
-    "designPanel": "Design your panel"
+  "header": {
+    "writeEntry": "+ New entry",
+    "signOut": "Sign out",
+    "language": "Language"
   },
   "home": {
-    "welcome": "Welcome back",
-    "recentEntries": "Recent Entries",
-    "noEntries": "No entries yet",
-    "searchPlaceholder": "Search entries...",
-    "filterByMood": "Filter by mood",
-    "filterByTag": "Filter by tag"
+    "recentEntries": "My entries",
+    "promptBefore": "Do you wanna",
+    "chatTheDay": "Chat the Day",
+    "promptMiddle": "or, maybe",
+    "lookBack": "Look back",
+    "promptAfter": "on your recent changes?",
+    "comingSoon": "Coming soon",
+    "loadError": "Couldn't load your entries. Please refresh the page."
   },
-  "chat": {
-    "title": "Chat the Day",
-    "placeholder": "Tell me what touched you today?",
-    "send": "Send",
-    "thinking": "Thinking..."
+  "entries": {
+    "searchPlaceholder": "Search titles or content…",
+    "filterByMood": "Filter by mood",
+    "filterByTag": "Filter by tag",
+    "clearFilters": "Clear filters",
+    "empty": "No entries yet",
+    "emptyHint": "Tap \"New entry\" in the top right to write your first one",
+    "noMatch": "No matching entries",
+    "notFound": "This entry doesn't exist or isn't yours",
+    "createdAt": "Created {date}",
+    "newTitle": "New entry",
+    "editTitle": "Edit entry",
+    "backToDetail": "← Back to entry",
+    "backHome": "← Back to home",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "deleteConfirm": "Delete this entry? This can't be undone.",
+    "deleteError": "Couldn't delete. Please try again.",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Give this entry a name…",
+      "content": "Content",
+      "contentPlaceholder": "What are you feeling, going through, or wondering about?",
+      "mood": "How do you feel right now",
+      "tags": "Tags",
+      "presetTags": ["Work", "Social", "Alone", "Family", "Emotions", "Growth"],
+      "customTagPlaceholder": "Custom tag…",
+      "addTag": "Add",
+      "removeTag": "Remove tag {tag}",
+      "required": "Title and content can't be empty",
+      "create": "Save entry",
+      "update": "Update entry",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "saveError": "Couldn't save. Please try again."
+    }
+  },
+  "moods": {
+    "calm": "Calm",
+    "happy": "Happy",
+    "anxious": "Anxious",
+    "angry": "Angry",
+    "sad": "Sad",
+    "tired": "Tired",
+    "confused": "Confused",
+    "lonely": "Lonely"
   },
   "panel": {
     "title": "My Panel",
-    "edit": "Edit Panel",
     "empty": "No custom panel yet",
+    "emptyHint": "Write what matters to you: reminders, comfort, or who you want to become.",
     "designYours": "Design your panel",
-    "markdownHelp": "Markdown supported",
     "editPanel": "Edit Panel",
-    "loading": "Loading...",
-    "saveError": "Failed to save, please try again",
-    "cancel": "Cancel",
-    "saving": "Saving...",
+    "markdownHelp": "Markdown supported: # heading, - list, > quote, **bold**",
+    "editMode": "Edit",
+    "previewMode": "Preview",
+    "placeholder": "# My reminders\n\n- Take care of my feelings first, then the problem\n- I don't need to please everyone\n\n> Slow is smooth, smooth is fast.",
+    "previewPlaceholder": "Preview will appear here",
     "save": "Save",
-    "editMode": "Edit Mode",
-    "placeholder": "Enter Markdown content here...",
-    "previewMode": "Preview Mode",
-    "previewPlaceholder": "Preview will be displayed here"
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "loadError": "Couldn't load your panel. Please refresh.",
+    "saveError": "Couldn't save. Please try again."
   },
   "auth": {
+    "loginSubtitle": "Soul Matter · Sign in",
+    "registerSubtitle": "Soul Matter · Create account",
     "email": "Email",
     "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "loginTitle": "Login to your thoughts",
-    "registerTitle": "Create Account",
+    "passwordPlaceholder": "At least 6 characters",
+    "login": "Sign in",
+    "register": "Sign up",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "confirmHint": "You may need to confirm your email after signing up (depends on Supabase settings).",
+    "info": {
+      "checkEmail": "Account created. Please confirm your email, then sign in."
+    },
+    "errors": {
+      "missingFields": "Please enter your email and password",
+      "invalidCredentials": "Incorrect email or password",
+      "emailNotConfirmed": "Your email isn't confirmed yet. Please check your inbox.",
+      "userAlreadyExists": "This email is already registered. Please sign in.",
+      "weakPassword": "Password is too weak. Use at least 6 characters.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "callbackFailed": "The confirmation link is invalid or expired. Please sign in again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "description": "The network may be unstable, or the service is temporarily unavailable.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you're looking for doesn't exist or has moved."
   }
 }

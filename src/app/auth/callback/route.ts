@@ -5,10 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const nextRaw = searchParams.get("next") ?? "/entries";
+  const nextRaw = searchParams.get("next") ?? "/";
   // 防止开放重定向：只允许站内相对路径
   const next =
-    nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "/entries";
+    nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "/";
 
   if (code) {
     const supabase = await createClient();
@@ -25,5 +25,5 @@ export async function GET(request: Request) {
   }
 
   // 出错则返回登录页
-  return NextResponse.redirect(`${origin}/login?error=auth-callback-failed`);
+  return NextResponse.redirect(`${origin}/login?error=callbackFailed`);
 }
