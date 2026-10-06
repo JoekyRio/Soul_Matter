@@ -10,6 +10,8 @@ export type Mood =
   | "confused"  // 困惑
   | "lonely";   // 孤独
 
+export type EntryType = "manual" | "chat";
+
 export const MOOD_LABELS: Record<Mood, string> = {
   calm: "平静",
   happy: "开心",
@@ -38,6 +40,7 @@ export interface Entry {
   title: string;
   content: string;
   mood: Mood | null;
+  type: EntryType;
   created_at: string;
   updated_at: string;
   tags?: TagSummary[];
@@ -62,6 +65,7 @@ export interface EntryInput {
   title: string;
   content: string;
   mood: Mood | null;
+  type?: EntryType;
   tagNames: string[];
 }
 
@@ -71,7 +75,17 @@ export interface EntryRow {
   title: string;
   content: string;
   mood: string | null;
+  type: string;
   created_at: string;
   updated_at: string;
   entry_tags: { tags: { id: string; name: string; color: string | null } }[] | null;
+}
+
+// Panel 内容
+export interface PanelContent {
+  id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
 }

@@ -1,8 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/auth/actions";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 export default async function Navbar() {
+  const t = await getTranslations("navbar");
   let user = null;
   try {
     const supabase = await createClient();
@@ -20,21 +23,22 @@ export default async function Navbar() {
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
       <nav className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <Link href="/entries" className="text-lg font-bold text-slate-900">
-          心事
+          {t("title")}
         </Link>
         <div className="flex items-center gap-3">
           <Link
             href="/entries/new"
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
           >
-            写心事
+            {t("writeEntry")}
           </Link>
+          <LocaleSwitcher />
           <form action={signOut}>
             <button
               type="submit"
               className="text-sm text-slate-500 hover:text-slate-900"
             >
-              退出
+              {t("signOut")}
             </button>
           </form>
         </div>

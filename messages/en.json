@@ -1,0 +1,66 @@
+{
+  "common": {
+    "appName": "Soul Matter",
+    "appSlogan": "Record your thoughts, know yourself, make peace with the world",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "navbar": {
+    "title": "Soul Matter",
+    "writeEntry": "Write Entry",
+    "signOut": "Sign Out"
+  },
+  "nav": {
+    "writeEntry": "Write Entry",
+    "chatTheDay": "Chat the Day",
+    "lookBack": "Look back",
+    "designPanel": "Design your panel"
+  },
+  "home": {
+    "welcome": "Welcome back",
+    "recentEntries": "Recent Entries",
+    "noEntries": "No entries yet",
+    "searchPlaceholder": "Search entries...",
+    "filterByMood": "Filter by mood",
+    "filterByTag": "Filter by tag"
+  },
+  "chat": {
+    "title": "Chat the Day",
+    "placeholder": "Tell me what touched you today?",
+    "send": "Send",
+    "thinking": "Thinking..."
+  },
+  "panel": {
+    "title": "My Panel",
+    "edit": "Edit Panel",
+    "empty": "No custom panel yet",
+    "designYours": "Design your panel",
+    "markdownHelp": "Markdown supported",
+    "editPanel": "Edit Panel",
+    "loading": "Loading...",
+    "saveError": "Failed to save, please try again",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save",
+    "editMode": "Edit Mode",
+    "placeholder": "Enter Markdown content here...",
+    "previewMode": "Preview Mode",
+    "previewPlaceholder": "Preview will be displayed here"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "loginTitle": "Login to your thoughts",
+    "registerTitle": "Create Account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  }
+}
