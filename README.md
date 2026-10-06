@@ -49,6 +49,15 @@ npm run dev
 
 详见 [DEPLOY.md](./DEPLOY.md)。
 
+## 文档
+
+- [产品规格 spec.md](./docs/spec.md) — 做什么、为什么、不做什么
+- [实施计划 tasks.md](./docs/tasks.md) — 里程碑、任务、验收标准
+- [产品评审 product-review.md](./docs/product-review.md) — 目标对齐评审与待决策问题
+- [工程化入门指南 engineering-guide.md](./docs/engineering-guide.md) — 写给不写代码的产品负责人
+- [代码审查记录 review.md](./docs/review.md)
+- 问题反馈：GitHub Issues → New issue，选择 Bug / 体验问题 / AI 回复质量 / 新想法 模板
+
 ## 项目结构
 
 ```

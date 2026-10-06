@@ -1,0 +1,71 @@
+name: "😣 体验问题：没坏，但不舒服"
+description: 找不到、看不懂、太慢、有压力、不想再用
+title: "[体验] "
+labels: ["ux"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        不用写得很专业，按下面五步把感受说具体就好。最省力的方式是**出声思考录屏**：打开手机屏幕录制，边用边说出你的想法。
+  - type: textarea
+    id: goal
+    attributes:
+      label: 1. 我当时想做什么
+      placeholder: 例如：睡前想快速记一下今天开会时的委屈
+    validations:
+      required: true
+  - type: textarea
+    id: actions
+    attributes:
+      label: 2. 我做了什么
+      placeholder: 例如：打开网站 → 找写心事的按钮
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: 3. 在哪一步卡住 / 不舒服
+      placeholder: 例如：首页没找到写心事的按钮，找了十几秒
+    validations:
+      required: true
+  - type: dropdown
+    id: feeling
+    attributes:
+      label: 4. 最接近的感受
+      multiple: true
+      options:
+        - 找不到
+        - 看不懂
+        - 点了没反应 / 不确定点没点上
+        - 等太久
+        - 太挤 / 太空 / 太乱
+        - 被打断
+        - 有压力 / 被评判
+        - 不放心（隐私、会不会丢）
+        - 不想再用
+        - 其他
+  - type: dropdown
+    id: score
+    attributes:
+      label: 这一步的顺畅程度（1 = 非常难受，5 = 非常顺）
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+  - type: textarea
+    id: wish
+    attributes:
+      label: 5. 我希望它怎样
+      description: 可以参考别的 App，例如"像备忘录那样打开就能写"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图 / 录屏
+      description: 把图片或视频直接拖进这里
+  - type: input
+    id: device
+    attributes:
+      label: 设备和浏览器
+      placeholder: 例如：iPhone 15 / Safari

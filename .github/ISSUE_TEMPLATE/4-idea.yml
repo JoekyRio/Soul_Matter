@@ -1,0 +1,24 @@
+name: "💡 新想法"
+description: 如果能……就好了
+title: "[想法] "
+labels: ["idea"]
+body:
+  - type: textarea
+    id: scenario
+    attributes:
+      label: 在什么场景下
+      placeholder: 例如：周末想回顾这一周的心情时
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决什么问题
+      placeholder: 例如：不记得这周都想通了哪些事
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 我的想法
+      description: 可以是很粗的想法，也可以附草图
