@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
 //            2) 用测试数据库的地址和 key 构建网站 npm run build
 // 详见 e2e/README.md
 const PORT = Number(process.env.E2E_PORT ?? 3100);
+export const MOCK_AI_PORT = Number(process.env.MOCK_DEEPSEEK_PORT ?? 3199);
 
 export default defineConfig({
   testDir: './e2e',
@@ -22,10 +23,24 @@ export default defineConfig({
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined,
     },
   },
-  webServer: {
-    command: `npm run start -- -p ${PORT}`,
-    url: `http://127.0.0.1:${PORT}/login`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      // 假 DeepSeek（见 e2e/mock-deepseek.mjs）
+      command: 'node e2e/mock-deepseek.mjs',
+      url: `http://127.0.0.1:${MOCK_AI_PORT}/last-request`,
+      reuseExistingServer: !process.env.CI,
+      env: { MOCK_DEEPSEEK_PORT: String(MOCK_AI_PORT) },
+    },
+    {
+      command: `npm run start -- -p ${PORT}`,
+      url: `http://127.0.0.1:${PORT}/login`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      env: {
+        DEEPSEEK_API_KEY: 'test-key',
+        DEEPSEEK_BASE_URL: `http://127.0.0.1:${MOCK_AI_PORT}`,
+        DEEPSEEK_MODEL: 'mock-model',
+      },
+    },
+  ],
 });

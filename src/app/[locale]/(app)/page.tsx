@@ -53,12 +53,9 @@ export default async function HomePage() {
           <section className="order-2 rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:order-1">
             <p className="text-lg leading-relaxed text-slate-700">
               {t('home.promptBefore')}{' '}
-              <span
-                className="cursor-not-allowed font-semibold text-slate-400"
-                title={t('home.comingSoon')}
-              >
+              <Link href="/chat" className="font-semibold text-blue-600 hover:underline">
                 [{t('home.chatTheDay')}]
-              </span>{' '}
+              </Link>{' '}
               {t('home.promptMiddle')}{' '}
               <span
                 className="cursor-not-allowed font-semibold text-slate-400"

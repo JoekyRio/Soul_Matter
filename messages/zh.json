@@ -51,7 +51,14 @@
       "contentPlaceholder": "写下你此刻的感受、经历或困惑…",
       "mood": "此刻的情绪",
       "tags": "标签",
-      "presetTags": ["工作", "社交", "独处", "家庭", "情绪", "成长"],
+      "presetTags": [
+        "工作",
+        "社交",
+        "独处",
+        "家庭",
+        "情绪",
+        "成长"
+      ],
       "customTagPlaceholder": "自定义标签…",
       "addTag": "添加",
       "removeTag": "移除标签 {tag}",
@@ -120,5 +127,53 @@
     "description": "可能是网络不稳定，或者服务暂时不可用。",
     "notFoundTitle": "页面不存在",
     "notFoundDescription": "你要找的页面不存在，或者已经被移走了。"
+  },
+  "chat": {
+    "title": "Chat the Day",
+    "placeholder": "Tell me what touched you today?",
+    "send": "发送",
+    "stop": "停止",
+    "newChat": "新对话",
+    "thinking": "正在想…",
+    "emptyHint": "今天有什么事触动了你？开心的、委屈的、说不清的，都可以聊聊。",
+    "inputLabel": "输入消息",
+    "you": "你",
+    "assistant": "陪伴者",
+    "retry": "重试",
+    "stopped": "（已停止）",
+    "errors": {
+      "unauthorized": "登录已过期，请重新登录",
+      "config_error": "AI 服务还没有配置好（缺少 DeepSeek 密钥）",
+      "upstream_error": "AI 暂时没有回应，请稍后重试",
+      "timeout": "AI 响应超时，请重试",
+      "network": "网络连接中断，请重试",
+      "generic": "出错了，请重试"
+    },
+    "feedback": {
+      "helpful": "有帮助",
+      "notHelpful": "没帮助",
+      "reasonPlaceholder": "哪里不好？（选填，帮助改进）",
+      "submit": "提交",
+      "thanks": "谢谢反馈"
+    },
+    "safety": {
+      "open": "需要帮助？",
+      "title": "如果你现在很难受",
+      "intro": "你不需要一个人扛着。请尽快联系身边信任的人，或者专业的求助渠道。",
+      "emergency": "如果你或他人正处于危险之中，请立即拨打 120（急救）或 110（报警）。",
+      "hotlinePending": "专业心理援助热线信息正在由心理医生审定，很快会补充在这里。",
+      "close": "关闭",
+      "aiNote": "AI 只是陪伴者，不能代替专业帮助。"
+    },
+    "consent": {
+      "title": "开始之前，请了解",
+      "items": [
+        "这里的 AI 是陪伴者，不是心理咨询师或医生，不会做诊断。",
+        "对话内容会保存在本应用的数据库（Supabase）中，并发送给 DeepSeek 生成回复。应用管理员在技术上可以看到这些数据。",
+        "AI 调用日志保留 30 天，用于改进和排查问题。",
+        "如果你正处于危机中，请联系身边信任的人或拨打 120 / 110。页面右上角的「需要帮助？」随时可以打开求助信息。"
+      ],
+      "accept": "我知道了"
+    }
   }
 }
