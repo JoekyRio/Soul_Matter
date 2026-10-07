@@ -1,66 +1,124 @@
 {
+  "metadata": {
+    "title": "心事 · Soul Matter",
+    "description": "记录心事，认识自己，与世界和解"
+  },
   "common": {
     "appName": "心事",
     "appSlogan": "记录心事，认识自己，与世界和解",
-    "login": "登录",
-    "register": "注册",
-    "logout": "退出",
-    "save": "保存",
-    "cancel": "取消",
-    "delete": "删除",
-    "edit": "编辑",
-    "loading": "加载中...",
-    "error": "出错了"
+    "loading": "加载中…",
+    "retry": "重试",
+    "backHome": "返回首页"
   },
-  "navbar": {
-    "title": "心事",
-    "writeEntry": "写心事",
-    "signOut": "退出"
-  },
-  "nav": {
-    "writeEntry": "写心事",
-    "chatTheDay": "Chat the Day",
-    "lookBack": "Look back",
-    "designPanel": "Design your panel"
+  "header": {
+    "writeEntry": "+ 写心事",
+    "signOut": "退出",
+    "language": "语言"
   },
   "home": {
-    "welcome": "欢迎回来",
-    "recentEntries": "最近的心事",
-    "noEntries": "还没有心事记录",
-    "searchPlaceholder": "搜索心事...",
-    "filterByMood": "按情绪筛选",
-    "filterByTag": "按标签筛选"
+    "recentEntries": "我的心事",
+    "promptBefore": "Do you wanna",
+    "chatTheDay": "Chat the Day",
+    "promptMiddle": "or, maybe",
+    "lookBack": "Look back",
+    "promptAfter": "on your recent changes?",
+    "comingSoon": "即将开放",
+    "loadError": "心事加载失败，请刷新页面重试。"
   },
-  "chat": {
-    "title": "Chat the Day",
-    "placeholder": "Tell me what touched you today?",
-    "send": "发送",
-    "thinking": "思考中..."
+  "entries": {
+    "searchPlaceholder": "搜索标题或内容…",
+    "filterByMood": "按情绪筛选",
+    "filterByTag": "按标签筛选",
+    "clearFilters": "清除筛选",
+    "empty": "还没有心事记录",
+    "emptyHint": "点右上角「写心事」，记下第一条吧",
+    "noMatch": "没有找到匹配的心事",
+    "notFound": "这条心事不存在或不属于你",
+    "createdAt": "创建于 {date}",
+    "newTitle": "写心事",
+    "editTitle": "编辑心事",
+    "backToDetail": "← 返回详情",
+    "backHome": "← 返回首页",
+    "edit": "编辑",
+    "delete": "删除",
+    "deleting": "删除中…",
+    "deleteConfirm": "确定删除这条心事吗？此操作不可撤销。",
+    "deleteError": "删除失败，请重试",
+    "form": {
+      "title": "标题",
+      "titlePlaceholder": "给这条心事起个名字…",
+      "content": "内容",
+      "contentPlaceholder": "写下你此刻的感受、经历或困惑…",
+      "mood": "此刻的情绪",
+      "tags": "标签",
+      "presetTags": ["工作", "社交", "独处", "家庭", "情绪", "成长"],
+      "customTagPlaceholder": "自定义标签…",
+      "addTag": "添加",
+      "removeTag": "移除标签 {tag}",
+      "required": "标题和内容不能为空",
+      "create": "保存心事",
+      "update": "更新心事",
+      "saving": "保存中…",
+      "cancel": "取消",
+      "saveError": "保存失败，请重试"
+    }
+  },
+  "moods": {
+    "calm": "平静",
+    "happy": "开心",
+    "anxious": "焦虑",
+    "angry": "愤怒",
+    "sad": "悲伤",
+    "tired": "疲惫",
+    "confused": "困惑",
+    "lonely": "孤独"
   },
   "panel": {
     "title": "我的 Panel",
-    "edit": "编辑 Panel",
     "empty": "还没有自定义 Panel",
+    "emptyHint": "写下对你有意义的话：提醒、安抚，或者你想成为的样子。",
     "designYours": "Design your panel",
-    "markdownHelp": "支持 Markdown 格式",
     "editPanel": "编辑 Panel",
-    "loading": "加载中...",
-    "saveError": "保存失败，请重试",
-    "cancel": "取消",
-    "saving": "保存中...",
+    "markdownHelp": "支持 Markdown：# 标题、- 列表、> 引用、**加粗**",
+    "editMode": "编辑",
+    "previewMode": "预览",
+    "placeholder": "# 我的提醒\n\n- 先照顾好自己的情绪，再处理事情\n- 我不需要让每个人都满意\n\n> 慢慢来，比较快。",
+    "previewPlaceholder": "预览将在此显示",
     "save": "保存",
-    "editMode": "编辑模式",
-    "placeholder": "在此输入 Markdown 内容...",
-    "previewMode": "预览模式",
-    "previewPlaceholder": "预览将在此显示"
+    "saving": "保存中…",
+    "cancel": "取消",
+    "loadError": "Panel 加载失败，请刷新重试",
+    "saveError": "保存失败，请重试"
   },
   "auth": {
+    "loginSubtitle": "Soul Matter · 登录",
+    "registerSubtitle": "Soul Matter · 创建账号",
     "email": "邮箱",
     "password": "密码",
-    "confirmPassword": "确认密码",
-    "loginTitle": "登录你的心事",
-    "registerTitle": "创建账户",
-    "noAccount": "还没有账户？",
-    "hasAccount": "已有账户？"
+    "passwordPlaceholder": "至少 6 位",
+    "login": "登录",
+    "register": "注册",
+    "noAccount": "还没有账号？",
+    "hasAccount": "已有账号？",
+    "confirmHint": "注册后可能需要在邮箱中点击确认链接（取决于 Supabase 配置）。",
+    "info": {
+      "checkEmail": "注册成功，请到邮箱点击确认链接后再登录"
+    },
+    "errors": {
+      "missingFields": "请填写邮箱和密码",
+      "invalidCredentials": "邮箱或密码不正确",
+      "emailNotConfirmed": "邮箱还没有确认，请先到邮箱点击确认链接",
+      "userAlreadyExists": "这个邮箱已经注册过了，请直接登录",
+      "weakPassword": "密码太简单，请至少使用 6 位",
+      "rateLimited": "操作太频繁，请稍后再试",
+      "callbackFailed": "邮箱确认链接无效或已过期，请重新登录",
+      "generic": "出错了，请稍后再试"
+    }
+  },
+  "errors": {
+    "title": "页面出错了",
+    "description": "可能是网络不稳定，或者服务暂时不可用。",
+    "notFoundTitle": "页面不存在",
+    "notFoundDescription": "你要找的页面不存在，或者已经被移走了。"
   }
 }

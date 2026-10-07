@@ -12,17 +12,7 @@ export type Mood =
 
 export type EntryType = "manual" | "chat";
 
-export const MOOD_LABELS: Record<Mood, string> = {
-  calm: "平静",
-  happy: "开心",
-  anxious: "焦虑",
-  angry: "愤怒",
-  sad: "悲伤",
-  tired: "疲惫",
-  confused: "困惑",
-  lonely: "孤独",
-};
-
+// 情绪的显示文字在 messages/*.json 的 "moods" 中
 export const MOODS: Mood[] = [
   "calm",
   "happy",

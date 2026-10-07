@@ -119,9 +119,10 @@ M1 里"点卡片 404"的 bug，就出在第 2 步：保安没有把不带 `/zh` 
 | **react-markdown** | 把 Markdown 文字显示成排版好的内容 | 简单可靠 | — |
 | **GitHub** | 代码仓库 + 协作平台（Issue、PR、自动检查） | 行业标准；Vercel 直接对接 | — |
 | **npm / package.json** | 项目的"配料表" | `package.json` 写需要哪些第三方包；`package-lock.json` 是精确到批次的采购单，保证每台电脑装的完全一样 | 不要手改 lock 文件 |
-| **ESLint** | 代码检查员 | 抓常见错误和不规范写法 | 当前有 6 个错误待修 |
-| *计划中* **GitHub Actions** | 自动检查（CI） | 每次提交自动跑检查，PR 上显示 ✅ 或 ❌ | — |
-| *计划中* **Playwright** | 自动化浏览器测试 | 像机器人一样打开网站、点按钮、检查结果 | 需要一个测试专用的 Supabase 项目 |
+| **ESLint** | 代码检查员 | 抓常见错误和不规范写法 | — |
+| **GitHub Actions** | 自动检查（CI） | 每次提交自动跑 lint、类型检查、构建和 E2E 测试，PR 上显示 ✅ 或 ❌ | 每次运行要几分钟 |
+| **Playwright** | 自动化浏览器测试（E2E） | 像真人一样打开网站、注册、写心事、点按钮、检查结果 | 测试要随功能一起维护 |
+| **本地 Supabase（Docker）** | 测试专用的临时数据库 | CI 每次运行时临时启动，用 `schema.sql` 建表，测完即丢，**不碰线上数据** | `schema.sql` 必须和线上保持一致 |
 | *计划中* **zod** | 数据格式校验 | 检查环境变量、接口参数、AI 返回的 JSON 是否合规 | — |
 
 ### 3.1 仓库里的文件夹是干什么的
@@ -129,20 +130,24 @@ M1 里"点卡片 404"的 bug，就出在第 2 步：保安没有把不带 `/zh` 
 ```
 Soul_Matter/
 ├── docs/                  ← 你最常看的地方：规格、任务、评审、本指南
+│   └── acceptance/        ←   每个里程碑的人工验收清单
 ├── src/
 │   ├── app/               ← 页面和接口。文件夹结构 = 网址结构
-│   │   ├── [locale]/      ←   带语言前缀的页面（/zh/...、/en/...）
+│   │   ├── [locale]/      ←   带语言的页面（中文不带前缀，英文为 /en/...）
+│   │   │   └── (app)/     ←     登录后才能看的页面（括号表示不影响网址）
 │   │   ├── api/           ←   后端接口（/api/entries、/api/panel）
 │   │   └── auth/          ←   登录、注册、退出、邮箱确认
-│   ├── components/        ← 可复用的组件（导航栏、语言切换）
+│   ├── components/        ← 可复用的组件（顶栏、登录卡片、语言切换）
 │   ├── i18n/              ← 多语言配置
 │   ├── lib/               ← 工具代码（连接 Supabase 等）
-│   └── types/             ← 数据类型定义
+│   ├── types/             ← 数据类型定义
+│   └── proxy.ts           ← 门口的"保安"：语言路由 + 登录保护
 ├── messages/              ← 多语言文案（zh.json / en.json）——纯文字，你可以直接改
 ├── supabase/              ← 数据库结构（schema.sql）和变更脚本（migrations/）
-├── AGENTS.md / CLAUDE.md  ← 给 AI 看的项目规则
-├── package.json           ← 依赖清单和常用命令
-└── middleware.ts          ← 门口的"保安"（计划更名为 proxy.ts）
+├── e2e/                   ← 自动化浏览器测试 + 测试数据库配置
+├── .github/               ← CI 配置（workflows/）和 Issue 反馈表单
+├── AGENTS.md / CLAUDE.md  ← 给 AI 看的项目规则（含"完成的定义"）
+└── package.json           ← 依赖清单和常用命令
 ```
 
 ---
@@ -168,6 +173,7 @@ Soul_Matter/
 | 环境 | 谁在用 | 地址 | 用途 |
 |---|---|---|---|
 | **本地 Local** | AI（在它的电脑/容器里） | `localhost:3000` | 开发和初步自测 |
+| **CI 测试** | 机器（GitHub Actions） | 无，每次提交临时搭建，测完即丢 | 自动跑全部检查和 E2E 测试，使用临时的本地数据库 |
 | **预览 Preview** | **你**（验收） | 每个分支/PR 自动生成一个独立网址，Vercel 会把链接贴在 PR 页面上 | 合并前验收，不影响正式站 |
 | **正式 Production** | 你和朋友（日常使用） | `soulmatter.vercel.app` | 真实使用 |
 
@@ -238,7 +244,7 @@ AI 每开一个新对话都会"失忆"，它对项目的了解全部来自仓库
 | `docs/tasks.md` | 怎么做、按什么顺序、怎样算完成 | AI 起草，你确认 |
 | `docs/product-review.md` | 产品方向的评审与决策 | 本次评审 |
 | `docs/review.md` | 代码审查记录 | 审查方 |
-| `docs/acceptance/*.md`（计划中） | 每个里程碑的人工验收清单 | AI 起草，你执行 |
+| `docs/acceptance/*.md` | 每个里程碑的人工验收清单（已有 M1） | AI 起草，你执行 |
 | `prompts/*.md`（计划中） | AI 的"人设"和规则、测试剧本、评分表 | **你可以直接编辑** |
 | `AGENTS.md` | 给所有 AI 工具的项目规则 | 共同维护 |
 
@@ -488,7 +494,7 @@ Chat the Day 的 AI "像不像一个好的陪伴者"，几乎完全由 system pr
 每个 PR 页面上，Vercel 会贴出一个**预览链接**。验收时：
 
 1. **用测试账号登录**（预览和正式共用数据库）
-2. **手机和电脑各走一遍**验收清单（每个里程碑会有一份 `docs/acceptance/Mx.md`）
+2. **手机和电脑各走一遍**验收清单（每个里程碑一份，例如 `docs/acceptance/M1.md`；标 🤖 的条目自动化测试已经检查过，你重点看"感觉对不对"）
 3. 通过的打勾；不通过的提 Issue，并在 PR 里说一声
 4. 全部通过后再合并
 
@@ -575,18 +581,10 @@ Chat the Day 好不好，最终取决于 AI 的回复。这部分你是**领域�
 - 跳过验收直接合并
 - 让写代码的同一个 AI 会话审查自己的代码（可以，但不能代替独立审查）
 
-### 8.4 让我（Claude Code）能更好地帮你测试
+### 8.4 我（Claude Code）能测什么、不能测什么
 
-目前我所在的云端环境**访问不了你的线上网站和 Supabase**（网络策略拦截了 `soulmatter.vercel.app`），所以我只能做"未登录状态"的自动测试，登录后的流程要靠你验收。如果想让我在提交前就把登录后的完整流程自动跑一遍，可以：
-
-1. **新建一个测试专用的 Supabase 项目**（不要用正式项目——测试会反复创建和删除数据），执行 `supabase/schema.sql`，注册一个测试账号
-2. 在这个云端环境的设置里（会话标题栏的云端环境菜单 → Edit）添加环境变量：
-   - `NEXT_PUBLIC_SUPABASE_URL`、`NEXT_PUBLIC_SUPABASE_ANON_KEY`（测试项目的）
-   - `E2E_TEST_EMAIL`、`E2E_TEST_PASSWORD`（测试账号）
-3. 在同一处的 **Network access** 里选择 Custom，把测试项目的域名（`xxxx.supabase.co`）加入 Allowed domains，保留默认的包管理器列表
-4. 新开的会话会自动读到这些设置
-
-操作说明见 https://code.claude.com/docs/en/cloud-environments 。**请不要把这些值贴进聊天。** 这一步不是必须的，可以等 M1.5 的 Task 18 时再做。
+- **能测**：我在自己的云端环境里用 Docker 启动了一个临时的本地 Supabase，登录后的完整流程（注册、写心事、编辑、搜索、Panel、切换语言、退出、两个账号的数据隔离）都能自动跑一遍。GitHub 上的 CI 也用同样的方式，每次提交自动运行。**这不需要你提供任何密钥，也不碰线上数据。**
+- **不能测**：我的环境访问不了你的线上网站（`soulmatter.vercel.app`）和线上 Supabase，所以"线上的真实数据和配置是否正常"仍要靠你在预览链接上验收。如果以后希望我直接访问预览链接，可以在这个云端环境的设置里（会话标题栏的云端环境菜单 → Edit → Network access 选 Custom）把 `vercel.app` 相关域名加入 Allowed domains，并保留默认的包管理器列表。操作说明见 https://code.claude.com/docs/en/cloud-environments 。**不需要也请不要把任何密钥贴进聊天。**
 
 ---
 

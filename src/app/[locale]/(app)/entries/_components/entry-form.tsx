@@ -1,10 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { MOODS, MOOD_LABELS, type Mood, type Entry } from "@/types/database";
-
-const PRESET_TAGS = ["工作", "社交", "独处", "家庭", "情绪", "成长"];
+import { useRouter } from "@/i18n/navigation";
+import { MOODS, type Mood, type Entry } from "@/types/database";
 
 interface EntryFormProps {
   entry?: Entry;
@@ -12,10 +11,13 @@ interface EntryFormProps {
 }
 
 export default function EntryForm({ entry, mode }: EntryFormProps) {
+  const t = useTranslations("entries.form");
+  const tMoods = useTranslations("moods");
+  const presetTags = t.raw("presetTags") as string[];
   const router = useRouter();
   const [title, setTitle] = useState(entry?.title ?? "");
   const [content, setContent] = useState(entry?.content ?? "");
-  const [mood, setMood] = useState<Mood | null>((entry?.mood as Mood) ?? null);
+  const [mood, setMood] = useState<Mood | null>(entry?.mood ?? null);
   const [selectedTags, setSelectedTags] = useState<string[]>(
     entry?.tags?.map((t) => t.name) ?? [],
   );
@@ -40,7 +42,7 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
-      setError("标题和内容不能为空");
+      setError(t("required"));
       return;
     }
 
@@ -60,8 +62,7 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "保存失败");
+        throw new Error(`Save failed: ${res.status}`);
       }
 
       const data = await res.json();
@@ -69,8 +70,8 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
       router.push(`/entries/${entryId}`);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "保存失败");
-    } finally {
+      console.error(err);
+      setError(t("saveError"));
       setSubmitting(false);
     }
   };
@@ -78,46 +79,49 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </div>
       )}
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          标题
+        <label htmlFor="entry-title" className="mb-1.5 block text-sm font-medium text-slate-700">
+          {t("title")}
         </label>
         <input
+          id="entry-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="给这条心事起个名字…"
+          placeholder={t("titlePlaceholder")}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          内容
+        <label htmlFor="entry-content" className="mb-1.5 block text-sm font-medium text-slate-700">
+          {t("content")}
         </label>
         <textarea
+          id="entry-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="写下你此刻的感受、经历或困惑…"
+          placeholder={t("contentPlaceholder")}
           rows={8}
           className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          此刻的情绪
-        </label>
+        <span className="mb-1.5 block text-sm font-medium text-slate-700">
+          {t("mood")}
+        </span>
         <div className="flex flex-wrap gap-2">
           {MOODS.map((m) => (
             <button
               key={m}
               type="button"
+              aria-pressed={mood === m}
               onClick={() => setMood(mood === m ? null : m)}
               className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 mood === m
@@ -125,21 +129,22 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
                   : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100"
               }`}
             >
-              {MOOD_LABELS[m]}
+              {tMoods(m)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          标签
-        </label>
+        <span className="mb-1.5 block text-sm font-medium text-slate-700">
+          {t("tags")}
+        </span>
         <div className="mb-2 flex flex-wrap gap-2">
-          {PRESET_TAGS.map((tag) => (
+          {presetTags.map((tag) => (
             <button
               key={tag}
               type="button"
+              aria-pressed={selectedTags.includes(tag)}
               onClick={() => toggleTag(tag)}
               className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 selectedTags.includes(tag)
@@ -162,7 +167,8 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
                 addCustomTag();
               }
             }}
-            placeholder="自定义标签…"
+            aria-label={t("customTagPlaceholder")}
+            placeholder={t("customTagPlaceholder")}
             className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
           <button
@@ -170,7 +176,7 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
             onClick={addCustomTag}
             className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-200"
           >
-            添加
+            {t("addTag")}
           </button>
         </div>
         {selectedTags.length > 0 && (
@@ -183,6 +189,7 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
                 {tag}
                 <button
                   type="button"
+                  aria-label={t("removeTag", { tag })}
                   onClick={() => toggleTag(tag)}
                   className="text-slate-400 hover:text-slate-700"
                 >
@@ -200,14 +207,14 @@ export default function EntryForm({ entry, mode }: EntryFormProps) {
           disabled={submitting}
           className="rounded-lg bg-slate-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-50"
         >
-          {submitting ? "保存中…" : mode === "create" ? "保存心事" : "更新心事"}
+          {submitting ? t("saving") : mode === "create" ? t("create") : t("update")}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="rounded-lg bg-white px-5 py-2 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
         >
-          取消
+          {t("cancel")}
         </button>
       </div>
     </form>
