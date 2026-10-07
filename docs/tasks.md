@@ -21,7 +21,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 
 | 里程碑 | 任务 | 状态 |
 |---|---|---|
-| M1.5 修复与质量地基 | Task 15–19 | `in_review`（Task 15–18 待你验收，见 Task 19） |
+| M1.5 修复与质量地基 | Task 15–19 | `completed`（2026-10-07 验收通过） |
 | M2 Chat the Day v1 | Task 20–25 | `pending` |
 | M3 对话 → 心事 → Panel 闭环 | Task 26–29 | `pending` |
 | M4 复盘与"敢给朋友用" | Task 30–33 | `pending` |
@@ -38,10 +38,10 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - 自动检查：`npm run check`（lint 0 错误 + 类型检查）、`npm run build` 通过；12 个 E2E 测试在本地 Supabase 上全部通过
 - 修复前验证：用同一套测试跑旧代码，12 个中 10 个失败；以真实登录用户复现了"保存后 404、点卡片 404、退出 404、首页没有写心事、`/` 进入旧列表页"
 - 额外发现并修复 **B11**：旧代码注册成功后跳转的网址里带中文提示文字，导致服务端报错（`Invalid character in header content`）——现象是点"注册"后页面停住没反应，但账号其实已经建好了。现在改为传错误/提示代码，由页面翻译
-- 待办：Task 19 —— 你在预览链接上按 `docs/acceptance/M1.md` 验收
+- 验收：2026-10-07 CI 全绿；产品负责人在预览链接上按 `docs/acceptance/M1.md` 验收，全部通过
 
 #### Task 15: 路由与中间件修复（B1、B8）
-- **Status**: `in_review`
+- **Status**: `completed`
 - **Priority**: high · **Size**: M
 - **Depends On**: None
 - **Description**:
@@ -58,7 +58,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 冒烟测试（Task 18）全部通过
 
 #### Task 16: 布局与导航修复（B2、B3、B5、B10）
-- **Status**: `in_review`
+- **Status**: `completed`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 15
 - **Description**:
@@ -74,7 +74,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 手机 + 电脑截图
 
 #### Task 17: 文案国际化补全 + Markdown 样式 + 深色模式（B4、B6、B7、B9）
-- **Status**: `in_review`
+- **Status**: `completed`
 - **Priority**: medium · **Size**: M
 - **Depends On**: Task 16
 - **Description**:
@@ -90,7 +90,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 中英文截图；Panel 截图
 
 #### Task 18: 质量门禁（CI + 冒烟测试）
-- **Status**: `in_review`
+- **Status**: `completed`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 15（可与 16、17 并行）
 - **Description**:
@@ -107,7 +107,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: PR 上 CI 绿色对勾截图
 
 #### Task 19: M1 验收与上线
-- **Status**: `pending`
+- **Status**: `completed`
 - **Priority**: high · **Size**: S
 - **Depends On**: Task 15 ~ 18
 - **Description**:
