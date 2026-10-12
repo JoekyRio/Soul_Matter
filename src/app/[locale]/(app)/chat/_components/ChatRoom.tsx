@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
-import type { ChatMessageRow, ChatStreamEvent } from '@/types/chat';
+import type { ChatMessageRow, ChatStreamEvent, PromptVariantId } from '@/types/chat';
 import ConsentDialog from './ConsentDialog';
 import FeedbackButtons from './FeedbackButtons';
 import SafetyCard from './SafetyCard';
@@ -33,15 +33,23 @@ function tempId() {
   return `temp-${Math.random().toString(36).slice(2)}`;
 }
 
+type VariantChoice = PromptVariantId | 'random';
+const VARIANT_CHOICES: VariantChoice[] = ['a', 'b', 'random'];
+
 export default function ChatRoom({
   initialConversationId,
+  initialVariant,
   initialMessages,
 }: {
   initialConversationId: string | null;
+  initialVariant: PromptVariantId | null;
   initialMessages: ChatMessageRow[];
 }) {
   const t = useTranslations('chat');
   const [conversationId, setConversationId] = useState(initialConversationId);
+  // 当前对话实际使用的规则版本（服务端确定）；新对话开始前由用户选择
+  const [variant, setVariant] = useState<PromptVariantId | null>(initialVariant);
+  const [variantChoice, setVariantChoice] = useState<VariantChoice>('random');
   const [messages, setMessages] = useState<UiMessage[]>(initialMessages);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -83,7 +91,12 @@ export default function ChatRoom({
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversationId, message: text, retryUserMessageId }),
+        body: JSON.stringify({
+          conversationId,
+          message: text,
+          retryUserMessageId,
+          promptVariant: variantChoice,
+        }),
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
@@ -106,6 +119,7 @@ export default function ChatRoom({
           const event = JSON.parse(line) as ChatStreamEvent;
           if (event.type === 'meta') {
             setConversationId(event.conversationId);
+            setVariant(event.promptVariant);
             setMessages((list) =>
               list.map((m) => {
                 if (m.id === assistantId) return { ...m, dbId: event.assistantMessageId };
@@ -161,6 +175,7 @@ export default function ChatRoom({
   function newChat() {
     abortRef.current?.abort();
     setConversationId(null);
+    setVariant(null);
     setMessages([]);
   }
 
@@ -188,6 +203,35 @@ export default function ChatRoom({
           </button>
         </div>
       </div>
+
+      {variant ? (
+        <p data-testid="prompt-variant" className="-mt-1 mb-2 text-xs text-slate-400">
+          {t('variant.current', { name: t(`variant.${variant}`) })}
+        </p>
+      ) : (
+        <div className="-mt-1 mb-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <span id="variant-label">{t('variant.label')}</span>
+          <div role="radiogroup" aria-labelledby="variant-label" className="flex gap-1">
+            {VARIANT_CHOICES.map((choice) => (
+              <button
+                key={choice}
+                type="button"
+                role="radio"
+                aria-checked={variantChoice === choice}
+                onClick={() => setVariantChoice(choice)}
+                className={`rounded-full px-2.5 py-0.5 ${
+                  variantChoice === choice
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                {t(`variant.${choice}`)}
+              </button>
+            ))}
+          </div>
+          <span className="text-slate-400">{t('variant.hint')}</span>
+        </div>
+      )}
 
       {safetyOpen && <SafetyCard onClose={() => setSafetyOpen(false)} />}
 

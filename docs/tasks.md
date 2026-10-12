@@ -128,7 +128,13 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - 自动检查：`npm run check`、`npm run build` 通过；E2E 共 17 个（新增 5 个对话测试，用 `e2e/mock-deepseek.mjs` 模拟 AI）全部通过
 - 实现要点：`/api/chat` 以 NDJSON 流式返回；AI 回复第一行的 `[[SAFETY]]` 标记 + 用户消息危机词两道保险触发求助卡片；连接失败自动重试一次，界面可手动重试且不重复保存消息；`ai_logs` 记录每次调用并清理 30 天前的日志
 - 求助卡片目前显示"热线审定中" + 120/110（D7）
-- 上线前需要你：执行 `supabase/migrations/002_chat.sql`；在 Vercel 配置 `DEEPSEEK_API_KEY`（Production + Preview）
+- 上线前需要你：执行 `supabase/migrations/002_chat.sql`；在 Vercel 配置 `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`（Production + Preview，步骤见验收清单）
+
+**2026-10-12 补充决策与改动**（产品负责人确认）：
+- **AI 服务**：改为通用的 OpenAI 兼容接口（`AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`），先用**硅基流动**，换模型只需改环境变量；旧的 `DEEPSEEK_*` 变量仍有效
+- **A/B 两版规则同时接入**：A 版 `prompts/chat-guide.md`、B 版 `prompts/chat-guide-b.md`（依据 `prompts/preferences.md`，由另一个会话根据真实聊天偏好整理）。新对话开始前选 A / B / 随机，版本记在 `conversations.prompt_variant`，整段对话固定；`ai_logs.prompt_version` 记录具体版本
+- **AI 知道当前时间**：system prompt 末尾附上北京时间的日期、星期和时刻；历史超过 40 条被截断时告诉 AI，避免假装记得
+- 测试剧本新增 13–17：求夸、质疑迎合、问学术依据、说要睡了、否定 AI 说出的感受
 - 验收清单：`docs/acceptance/M2.md`
 
 #### Task 20: 对话数据表（conversations / messages / ai_logs）
@@ -267,7 +273,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Depends On**: Task 27
 - **Description**:
   - 保存心事后（以及在心事详情页）提供"把这句结论加到我的 Panel"
-  - 追加到 Panel 末尾（Markdown 列表项），可回到 Panel 编辑页调整
+  - 追加到 Panel 末尾（Markdown 列表项，**附上日期**，例如 `- 我不需要让每个人都满意（2026-10-12）`），可回到 Panel 编辑页调整
 - **Test Requirements**:
   - `rule` TR-28.1: 加入后首页 Panel 立即可见
 - **Completion Evidence**: 截图
@@ -296,7 +302,9 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Depends On**: Task 29
 - **Description**:
   - `/look-back`：最近 4 周的情绪分布（按周）+ 你写下的结论时间线
+  - **按日期范围、标签筛选，并可搜索结论**（来自真实复盘需求：按时间或话题回看、对照新旧结论、需要时找回写过的安抚语）
   - 不调用 AI；首页 [Look back] 入口点亮
+  - 以后若加入 AI 观察：只以 entries（尤其是用户写的 conclusion）为来源，每条观察附来源心事的 id 和日期，服务端校验 id 存在
 - **Acceptance Criteria**: FR-4.4（简易版）
 - **Test Requirements**:
   - `rule` TR-30.1: 数据与实际记录一致

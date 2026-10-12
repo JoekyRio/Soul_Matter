@@ -206,9 +206,14 @@ CREATE TABLE IF NOT EXISTS public.conversations (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title text NOT NULL DEFAULT '',
   status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'ended')),
+  -- 这段对话使用的 AI 规则版本：a = prompts/chat-guide.md，b = prompts/chat-guide-b.md
+  prompt_variant text NOT NULL DEFAULT 'a' CHECK (prompt_variant IN ('a', 'b')),
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+-- 早先执行过本脚本的数据库补上 prompt_variant 列
+ALTER TABLE public.conversations
+  ADD COLUMN IF NOT EXISTS prompt_variant text NOT NULL DEFAULT 'a' CHECK (prompt_variant IN ('a', 'b'));
 CREATE INDEX IF NOT EXISTS conversations_user_updated_idx
   ON public.conversations(user_id, updated_at DESC);
 

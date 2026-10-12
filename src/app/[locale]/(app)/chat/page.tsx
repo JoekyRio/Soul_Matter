@@ -1,5 +1,5 @@
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
-import type { ChatMessageRow } from "@/types/chat";
+import type { ChatMessageRow, PromptVariantId } from "@/types/chat";
 import ChatRoom from "./_components/ChatRoom";
 
 // 打开 Chat the Day 时，继续最近一次进行中的对话
@@ -10,7 +10,7 @@ export default async function ChatPage() {
   const supabase = await createClient();
   const { data: conversation } = await supabase
     .from("conversations")
-    .select("id")
+    .select("id, prompt_variant")
     .eq("user_id", user.id)
     .eq("status", "active")
     .order("updated_at", { ascending: false })
@@ -27,5 +27,11 @@ export default async function ChatPage() {
     messages = (data ?? []) as ChatMessageRow[];
   }
 
-  return <ChatRoom initialConversationId={conversation?.id ?? null} initialMessages={messages} />;
+  return (
+    <ChatRoom
+      initialConversationId={conversation?.id ?? null}
+      initialVariant={(conversation?.prompt_variant as PromptVariantId | undefined) ?? null}
+      initialMessages={messages}
+    />
+  );
 }

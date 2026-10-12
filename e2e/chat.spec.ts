@@ -39,6 +39,8 @@ test.describe('Chat the Day', () => {
     expect(sent[0].role).toBe('system');
     expect(sent[0].content).toContain('你是「心事」里的陪伴者');
     expect(sent[0].content).not.toContain('version:'); // 注释不会发给 AI
+    expect(sent[0].content).toMatch(/现在是 \d{4}年\d{1,2}月\d{1,2}日星期./); // 附上当前时间
+    expect(sent[0].content).not.toContain('没有发给你'); // 历史没有被截断
     expect(sent.slice(1).map((m) => m.role)).toEqual(['user', 'assistant', 'user']);
     expect(last.authorization).toBe('Bearer test-key');
 
@@ -51,6 +53,38 @@ test.describe('Chat the Day', () => {
     // 新对话
     await page.getByRole('button', { name: '新对话' }).click();
     await expect(page.getByTestId('user-message')).toHaveCount(0);
+  });
+
+  test('A/B 规则：新对话可以选版本，整段对话固定使用该版本', async ({ page }) => {
+    await register(page, uniqueEmail('variant'));
+    await openChat(page);
+    const choices = page.getByRole('radiogroup', { name: 'AI 规则版本' });
+    await expect(choices.getByRole('radio', { name: '随机' })).toHaveAttribute('aria-checked', 'true');
+
+    await choices.getByRole('radio', { name: 'B 版' }).click();
+    await say(page, '测试 B 版');
+    await expect(page.getByTestId('prompt-variant')).toHaveText('本次对话：B 版');
+    await expect(page.getByRole('radiogroup')).toHaveCount(0);
+    const b = await (await page.request.get(`${MOCK_AI}/last-request`)).json();
+    expect(b.body.messages[0].content).toContain('也愿意说真话的老朋友'); // B 版独有的句子
+    await expect(page.getByRole('button', { name: '发送' })).toBeVisible();
+
+    // 刷新后仍是 B 版，继续对话也用 B 版
+    await page.reload();
+    await expect(page.getByTestId('prompt-variant')).toHaveText('本次对话：B 版');
+    await say(page, '继续聊');
+    await expect(page.getByTestId('assistant-message').nth(1)).toContainText('继续聊');
+    const b2 = await (await page.request.get(`${MOCK_AI}/last-request`)).json();
+    expect(b2.body.messages[0].content.split('## 当前信息')[0]).toBe(b.body.messages[0].content.split('## 当前信息')[0]);
+
+    // 新对话选 A 版
+    await page.getByRole('button', { name: '新对话' }).click();
+    await page.getByRole('radiogroup', { name: 'AI 规则版本' }).getByRole('radio', { name: 'A 版' }).click();
+    await say(page, '测试 A 版');
+    await expect(page.getByTestId('prompt-variant')).toHaveText('本次对话：A 版');
+    const a = await (await page.request.get(`${MOCK_AI}/last-request`)).json();
+    expect(a.body.messages[0].content).toContain('你是「心事」里的陪伴者');
+    expect(a.body.messages[0].content).not.toContain('也愿意说真话的老朋友');
   });
 
   test('反馈：👍 / 👎 保存，刷新后保持', async ({ page }) => {

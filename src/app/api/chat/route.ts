@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { AIError, streamChat, type ChatMessage, type ChatUsage } from "@/lib/ai/deepseek";
-import { loadPrompt } from "@/lib/ai/prompts";
+import { AIError, streamChat, type ChatMessage, type ChatUsage } from "@/lib/ai/chat-completions";
+import { chatContext, loadChatGuide, PROMPT_VARIANTS, type PromptVariant } from "@/lib/ai/prompts";
 import { looksLikeCrisis, SAFETY_MARKER } from "@/lib/ai/safety";
 import { getServerEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -17,6 +17,8 @@ const bodySchema = z.object({
   message: z.string().trim().min(1).max(4000),
   // 重试上一次失败的回复：用户消息已经保存过，不再重复保存
   retryUserMessageId: z.uuid().nullish(),
+  // 新对话使用哪一版规则；random 表示随机分配。已有对话沿用创建时的版本
+  promptVariant: z.enum(["a", "b", "random"]).nullish(),
 });
 
 function apiError(code: string, message: string, status: number) {
@@ -45,18 +47,25 @@ export async function POST(request: Request) {
 
   // 找到或创建对话
   let conversationId = parsed.data.conversationId ?? null;
+  let promptVariant: PromptVariant;
   if (conversationId) {
     const { data } = await supabase
       .from("conversations")
-      .select("id")
+      .select("id, prompt_variant")
       .eq("id", conversationId)
       .eq("user_id", user.id)
       .maybeSingle();
     if (!data) return apiError("not_found", "对话不存在", 404);
+    promptVariant = data.prompt_variant as PromptVariant;
   } else {
+    const requested = parsed.data.promptVariant ?? "a";
+    promptVariant =
+      requested === "random"
+        ? PROMPT_VARIANTS[Math.floor(Math.random() * PROMPT_VARIANTS.length)]
+        : requested;
     const { data, error } = await supabase
       .from("conversations")
-      .insert({ user_id: user.id, title: message.slice(0, 40) })
+      .insert({ user_id: user.id, title: message.slice(0, 40), prompt_variant: promptVariant })
       .select("id")
       .single();
     if (error || !data) return apiError("db_error", "创建对话失败", 500);
@@ -85,16 +94,20 @@ export async function POST(request: Request) {
     userMessage = data;
   }
 
-  const { data: history } = await supabase
+  const { data: history, count: totalMessages } = await supabase
     .from("messages")
-    .select("role, content")
+    .select("role, content", { count: "exact" })
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: false })
     .limit(HISTORY_LIMIT);
 
-  const prompt = loadPrompt("chat-guide");
+  const prompt = loadChatGuide(promptVariant);
+  const context = chatContext({
+    now: new Date(),
+    omittedMessages: Math.max(0, (totalMessages ?? 0) - (history?.length ?? 0)),
+  });
   const aiMessages: ChatMessage[] = [
-    { role: "system", content: prompt.text },
+    { role: "system", content: `${prompt.text}\n\n${context}` },
     ...((history ?? []).reverse() as ChatMessage[]),
   ];
   const assistantMessageId = crypto.randomUUID();
@@ -116,6 +129,7 @@ export async function POST(request: Request) {
       send({
         type: "meta",
         conversationId: conversationId!,
+        promptVariant,
         userMessageId: userMessage!.id,
         assistantMessageId,
       });
@@ -193,7 +207,7 @@ export async function POST(request: Request) {
         user_id: user.id,
         conversation_id: conversationId,
         endpoint: "/api/chat",
-        model: env.DEEPSEEK_MODEL,
+        model: env.AI_MODEL,
         prompt_version: prompt.version,
         request: { messages: aiMessages.slice(1), history_limit: HISTORY_LIMIT },
         response: fullText || null,

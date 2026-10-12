@@ -25,7 +25,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      // 假 DeepSeek（见 e2e/mock-deepseek.mjs）
+      // 假 AI 服务（见 e2e/mock-deepseek.mjs）
       command: 'node e2e/mock-deepseek.mjs',
       url: `http://127.0.0.1:${MOCK_AI_PORT}/last-request`,
       reuseExistingServer: !process.env.CI,
@@ -37,9 +37,9 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
       env: {
-        DEEPSEEK_API_KEY: 'test-key',
-        DEEPSEEK_BASE_URL: `http://127.0.0.1:${MOCK_AI_PORT}`,
-        DEEPSEEK_MODEL: 'mock-model',
+        AI_API_KEY: 'test-key',
+        AI_BASE_URL: `http://127.0.0.1:${MOCK_AI_PORT}`,
+        AI_MODEL: 'mock-model',
       },
     },
   ],

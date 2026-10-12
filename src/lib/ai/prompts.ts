@@ -9,3 +9,37 @@ export function loadPrompt(name: string) {
   const text = raw.replace(/<!--[\s\S]*?-->/g, "").trim();
   return { name, version: `${name}@${version}`, text };
 }
+
+// Chat the Day 的两版规则，用于 A/B 对比
+export const PROMPT_VARIANTS = ["a", "b"] as const;
+export type PromptVariant = (typeof PROMPT_VARIANTS)[number];
+
+const VARIANT_FILES: Record<PromptVariant, string> = {
+  a: "chat-guide",
+  b: "chat-guide-b",
+};
+
+export function loadChatGuide(variant: PromptVariant) {
+  return loadPrompt(VARIANT_FILES[variant]);
+}
+
+// 附在规则后面的实时信息：当前时间（北京时间），以及历史是否被截断，避免 AI 假装记得
+export function chatContext(options: { now: Date; omittedMessages: number }) {
+  const time = new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(options.now);
+  const lines = [`## 当前信息`, `- 现在是 ${time}（北京时间）`];
+  if (options.omittedMessages > 0) {
+    lines.push(
+      `- 这段对话比较长，更早的 ${options.omittedMessages} 条消息没有发给你。不要假装记得那部分内容；需要时请用户再说一下。`,
+    );
+  }
+  return lines.join("\n");
+}
