@@ -135,6 +135,10 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **A/B 两版规则同时接入**：A 版 `prompts/chat-guide.md`、B 版 `prompts/chat-guide-b.md`（依据 `prompts/preferences.md`，由另一个会话根据真实聊天偏好整理）。新对话开始前选 A / B / 随机，版本记在 `conversations.prompt_variant`，整段对话固定；`ai_logs.prompt_version` 记录具体版本
 - **AI 知道当前时间**：system prompt 末尾附上北京时间的日期、星期和时刻；历史超过 40 条被截断时告诉 AI，避免假装记得
 - 测试剧本新增 13–17：求夸、质疑迎合、问学术依据、说要睡了、否定 AI 说出的感受
+
+**2026-10-12 验收中发现并修复**：
+- 偶发"AI 暂时没有回应"：原来的 30 秒超时限制了整个回复的总时长，推理模型（如 DeepSeek-V4-Pro）先思考再回答时会被截断。改为"30 秒内开始响应 + 两段数据间隔不超过 60 秒"，`max_tokens` 提高到 4096，接口最长运行时间提高到 300 秒；新增 E2E 测试（模拟思考 35 秒）
+- 无法关闭当前对话：把"新对话"改为"结束对话"——对话保存并标记为结束，下次进入开始新对话（M3 会在这里接上"AI 整理 + 写结论"）
 - 验收清单：`docs/acceptance/M2.md`
 
 #### Task 20: 对话数据表（conversations / messages / ai_logs）

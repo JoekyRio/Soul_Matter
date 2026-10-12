@@ -7,7 +7,8 @@ import { getServerEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import type { ChatStreamEvent } from "@/types/chat";
 
-export const maxDuration = 60;
+// 推理模型可能先思考较久，给足时间（Vercel Fluid Compute 允许最长 300 秒）
+export const maxDuration = 300;
 
 const HISTORY_LIMIT = 40; // 发给 AI 的最近消息条数（控制成本和上下文长度）
 const LOG_RETENTION_DAYS = 30;

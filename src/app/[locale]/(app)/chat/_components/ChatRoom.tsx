@@ -172,8 +172,20 @@ export default function ChatRoom({
     void send(message.failed.text, userDbId);
   }
 
-  function newChat() {
+  async function endChat() {
+    if (!window.confirm(t('endConfirm'))) return;
     abortRef.current?.abort();
+    if (conversationId) {
+      const res = await fetch(`/api/conversations/${conversationId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ended' }),
+      }).catch(() => null);
+      if (!res?.ok) {
+        window.alert(t('endError'));
+        return;
+      }
+    }
     setConversationId(null);
     setVariant(null);
     setMessages([]);
@@ -195,11 +207,11 @@ export default function ChatRoom({
           </button>
           <button
             type="button"
-            onClick={newChat}
+            onClick={endChat}
             disabled={busy || messages.length === 0}
             className="rounded-lg px-3 py-1.5 text-sm text-slate-600 ring-1 ring-slate-200 hover:bg-white disabled:opacity-40"
           >
-            {t('newChat')}
+            {t('endChat')}
           </button>
         </div>
       </div>

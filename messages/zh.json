@@ -133,7 +133,6 @@
     "placeholder": "Tell me what touched you today?",
     "send": "发送",
     "stop": "停止",
-    "newChat": "新对话",
     "thinking": "正在想…",
     "emptyHint": "今天有什么事触动了你？开心的、委屈的、说不清的，都可以聊聊。",
     "inputLabel": "输入消息",
@@ -182,6 +181,9 @@
       "random": "随机",
       "current": "本次对话：{name}",
       "hint": "新对话开始前可以选择；同一段对话中不会改变"
-    }
+    },
+    "endChat": "结束对话",
+    "endConfirm": "结束这段对话吗？对话会保存下来，下次进来会开始一段新的对话。",
+    "endError": "结束对话失败，请重试"
   }
 }

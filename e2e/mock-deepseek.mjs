@@ -3,6 +3,7 @@
 //   含"不想活"      → 回复以 [[SAFETY]] 开头（模拟 AI 识别到危机）
 //   含"慢慢说"      → 慢速逐字回复（用于测试"停止"按钮）
 //   含"触发错误"    → 前两次请求返回 500（用于测试重试）
+//   含"想久一点"    → 先"思考"约 35 秒（推理模型的 reasoning_content），再回复
 //   其他            → 普通引导式回复
 import http from 'node:http';
 
@@ -48,6 +49,13 @@ http
     }
 
     res.writeHead(200, { 'Content-Type': 'text/event-stream' });
+    if (last.includes('想久一点')) {
+      // 模拟推理模型：先持续输出 reasoning_content（不显示给用户），总时长超过 30 秒
+      for (let i = 0; i < 35 && !res.destroyed; i++) {
+        res.write(`data: ${JSON.stringify({ choices: [{ delta: { reasoning_content: '思考中…' } }] })}\n\n`);
+        await sleep(1000);
+      }
+    }
     const chunks = reply.match(/[\s\S]{1,3}/g) ?? [];
     for (const piece of chunks) {
       if (res.destroyed) return;

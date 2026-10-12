@@ -50,9 +50,13 @@ test.describe('Chat the Day', () => {
     await expect(replies).toHaveCount(2);
     await expect(page.getByRole('dialog')).toHaveCount(0);
 
-    // 新对话
-    await page.getByRole('button', { name: '新对话' }).click();
+    // 结束对话：对话保存，界面清空；刷新后不会再回到这段对话
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.getByRole('button', { name: '结束对话' }).click();
     await expect(page.getByTestId('user-message')).toHaveCount(0);
+    await page.reload();
+    await expect(page.getByTestId('user-message')).toHaveCount(0);
+    await expect(page.getByRole('radiogroup', { name: 'AI 规则版本' })).toBeVisible();
   });
 
   test('A/B 规则：新对话可以选版本，整段对话固定使用该版本', async ({ page }) => {
@@ -77,8 +81,9 @@ test.describe('Chat the Day', () => {
     const b2 = await (await page.request.get(`${MOCK_AI}/last-request`)).json();
     expect(b2.body.messages[0].content.split('## 当前信息')[0]).toBe(b.body.messages[0].content.split('## 当前信息')[0]);
 
-    // 新对话选 A 版
-    await page.getByRole('button', { name: '新对话' }).click();
+    // 结束后开新对话，选 A 版
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.getByRole('button', { name: '结束对话' }).click();
     await page.getByRole('radiogroup', { name: 'AI 规则版本' }).getByRole('radio', { name: 'A 版' }).click();
     await say(page, '测试 A 版');
     await expect(page.getByTestId('prompt-variant')).toHaveText('本次对话：A 版');
@@ -141,6 +146,17 @@ test.describe('Chat the Day', () => {
     // 重试不会重复保存用户消息
     await page.reload();
     await expect(page.getByTestId('user-message')).toHaveCount(2);
+  });
+
+  test('推理模型先思考很久（超过 30 秒）也能正常回复', async ({ page }) => {
+    test.setTimeout(90_000);
+    await register(page, uniqueEmail('slow'));
+    await openChat(page);
+    await say(page, '请你想久一点');
+    await expect(page.getByTestId('assistant-message').first()).toContainText('请你想久一点', {
+      timeout: 60_000,
+    });
+    await expect(page.getByText('AI 暂时没有回应')).toHaveCount(0);
   });
 
   test('隐私：看不到别人的对话', async ({ browser }) => {
