@@ -2,7 +2,7 @@
 
 这里的测试会像真人一样打开浏览器操作网站：注册、写心事、编辑、搜索、删除、编辑 Panel、切换语言、退出，以及"看不到别人的心事"。
 
-测试连接的是一个**临时的本地 Supabase**（用 Docker 运行，配置在 `e2e/supabase/config.toml`），**不会碰线上数据库**。每次推送代码，GitHub Actions 都会自动跑一遍（见 `.github/workflows/ci.yml`），结果显示在 PR 页面上。
+Chat the Day 的测试使用 `e2e/mock-deepseek.mjs` 这个"假 DeepSeek"（按固定规则回复），不调用真实 AI、不花钱。测试连接的是一个**临时的本地 Supabase**（用 Docker 运行，配置在 `e2e/supabase/config.toml`），**不会碰线上数据库**。每次推送代码，GitHub Actions 都会自动跑一遍（见 `.github/workflows/ci.yml`），结果显示在 PR 页面上。
 
 ## 本地运行（需要 Docker）
 

@@ -10,7 +10,7 @@
 - ✅ 多端响应式：手机和电脑浏览器都能用
 - ✅ 数据安全：行级安全策略，只能访问自己的数据
 - ✅ 多语言框架：中文为主，可切换英文
-- 🚧 Chat the Day：AI 引导式对话（M2）
+- ✅ Chat the Day：AI 引导式对话（DeepSeek，流式回复、安全护栏、👍/👎 反馈）
 - 🚧 对话 → 心事 → Panel 闭环（M3）
 - 🚧 Look back 复盘、添加到主屏幕、数据导出/删除（M4）
 
@@ -59,6 +59,7 @@ npm run dev
 - [实施计划 tasks.md](./docs/tasks.md) — 里程碑、任务、验收标准
 - [产品评审 product-review.md](./docs/product-review.md) — 目标对齐评审与待决策问题
 - [工程化入门指南 engineering-guide.md](./docs/engineering-guide.md) — 写给不写代码的产品负责人
+- [AI 规则与测试剧本 prompts/](./prompts/README.md)
 - [代码审查记录 review.md](./docs/review.md)
 - 问题反馈：GitHub Issues → New issue，选择 Bug / 体验问题 / AI 回复质量 / 新想法 模板
 

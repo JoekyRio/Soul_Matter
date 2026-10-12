@@ -22,7 +22,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 | 里程碑 | 任务 | 状态 |
 |---|---|---|
 | M1.5 修复与质量地基 | Task 15–19 | `completed`（2026-10-07 验收通过） |
-| M2 Chat the Day v1 | Task 20–25 | `pending` |
+| M2 Chat the Day v1 | Task 20–25 | `in_review`（待你配置密钥、执行迁移并验收） |
 | M3 对话 → 心事 → Panel 闭环 | Task 26–29 | `pending` |
 | M4 复盘与"敢给朋友用" | Task 30–33 | `pending` |
 | Backlog | 见文末 | 验证后再排 |
@@ -124,8 +124,25 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 > 目标：能和一个"会提问、不说教、不贴标签、有安全意识"的 AI 聊今天发生的事。
 > D2：引导 prompt 与安全护栏从 Phase 3 提前到这里，与对话同时上线。
 
+**完成情况（2026-10-07）**：Task 20–25 的代码已完成，Task 22 的 prompt / 剧本 / 评分表是**初稿**，等你用真实 DeepSeek 跑剧本打分后定稿。
+- 自动检查：`npm run check`、`npm run build` 通过；E2E 共 17 个（新增 5 个对话测试，用 `e2e/mock-deepseek.mjs` 模拟 AI）全部通过
+- 实现要点：`/api/chat` 以 NDJSON 流式返回；AI 回复第一行的 `[[SAFETY]]` 标记 + 用户消息危机词两道保险触发求助卡片；连接失败自动重试一次，界面可手动重试且不重复保存消息；`ai_logs` 记录每次调用并清理 30 天前的日志
+- 求助卡片目前显示"热线审定中" + 120/110（D7）
+- 上线前需要你：执行 `supabase/migrations/002_chat.sql`；在 Vercel 配置 `AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`（Production + Preview，步骤见验收清单）
+
+**2026-10-12 补充决策与改动**（产品负责人确认）：
+- **AI 服务**：改为通用的 OpenAI 兼容接口（`AI_API_KEY` / `AI_BASE_URL` / `AI_MODEL`），先用**硅基流动**，换模型只需改环境变量；旧的 `DEEPSEEK_*` 变量仍有效
+- **A/B 两版规则同时接入**：A 版 `prompts/chat-guide.md`、B 版 `prompts/chat-guide-b.md`（依据 `prompts/preferences.md`，由另一个会话根据真实聊天偏好整理）。新对话开始前选 A / B / 随机，版本记在 `conversations.prompt_variant`，整段对话固定；`ai_logs.prompt_version` 记录具体版本
+- **AI 知道当前时间**：system prompt 末尾附上北京时间的日期、星期和时刻；历史超过 40 条被截断时告诉 AI，避免假装记得
+- 测试剧本新增 13–17：求夸、质疑迎合、问学术依据、说要睡了、否定 AI 说出的感受
+
+**2026-10-12 验收中发现并修复**：
+- 偶发"AI 暂时没有回应"：原来的 30 秒超时限制了整个回复的总时长，推理模型（如 DeepSeek-V4-Pro）先思考再回答时会被截断。改为"30 秒内开始响应 + 两段数据间隔不超过 60 秒"，`max_tokens` 提高到 4096，接口最长运行时间提高到 300 秒；新增 E2E 测试（模拟思考 35 秒）
+- 无法关闭当前对话：把"新对话"改为"结束对话"——对话保存并标记为结束，下次进入开始新对话（M3 会在这里接上"AI 整理 + 写结论"）
+- 验收清单：`docs/acceptance/M2.md`
+
 #### Task 20: 对话数据表（conversations / messages / ai_logs）
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: S
 - **Depends On**: Task 19
 - **Description**:
@@ -143,7 +160,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: Supabase Table Editor 截图
 
 #### Task 21: DeepSeek 接入层 + `/api/chat` 流式接口
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 20
 - **Description**:
@@ -160,7 +177,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: ai_logs 记录截图
 
 #### Task 22: 引导 Prompt v1 + 测试剧本集
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: None（可与 Task 20、21 并行；**由你和 AI 共同完成**）
 - **Description**:
@@ -178,7 +195,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 剧本评分记录
 
 #### Task 23: `/chat` 页面
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: M
 - **Depends On**: Task 21
 - **Description**:
@@ -193,7 +210,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 手机对话录屏
 
 #### Task 24: 安全护栏与知情同意
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: high · **Size**: S
 - **Depends On**: Task 22, Task 23
 - **Description**:
@@ -206,7 +223,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Completion Evidence**: 截图
 
 #### Task 25: 对话反馈 👍 / 👎
-- **Status**: `pending`
+- **Status**: `in_review`
 - **Priority**: medium · **Size**: S
 - **Depends On**: Task 23
 - **Description**:
@@ -260,7 +277,7 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Depends On**: Task 27
 - **Description**:
   - 保存心事后（以及在心事详情页）提供"把这句结论加到我的 Panel"
-  - 追加到 Panel 末尾（Markdown 列表项），可回到 Panel 编辑页调整
+  - 追加到 Panel 末尾（Markdown 列表项，**附上日期**，例如 `- 我不需要让每个人都满意（2026-10-12）`），可回到 Panel 编辑页调整
 - **Test Requirements**:
   - `rule` TR-28.1: 加入后首页 Panel 立即可见
 - **Completion Evidence**: 截图
@@ -289,7 +306,9 @@ M1.5 修复与质量地基 ──▶ M2 Chat the Day v1 ──▶ M3 对话→�
 - **Depends On**: Task 29
 - **Description**:
   - `/look-back`：最近 4 周的情绪分布（按周）+ 你写下的结论时间线
+  - **按日期范围、标签筛选，并可搜索结论**（来自真实复盘需求：按时间或话题回看、对照新旧结论、需要时找回写过的安抚语）
   - 不调用 AI；首页 [Look back] 入口点亮
+  - 以后若加入 AI 观察：只以 entries（尤其是用户写的 conclusion）为来源，每条观察附来源心事的 id 和日期，服务端校验 id 存在
 - **Acceptance Criteria**: FR-4.4（简易版）
 - **Test Requirements**:
   - `rule` TR-30.1: 数据与实际记录一致
